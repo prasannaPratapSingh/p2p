@@ -8,3 +8,4 @@ app.listen(envConfig.PORT, async () => {
     await connectDB();
     console.log(`Server sun raha hai ${envConfig.PORT} port par!`);
 })
+
