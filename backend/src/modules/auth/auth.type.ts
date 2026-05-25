@@ -3,3 +3,8 @@ export interface registerBody {
     password: string,
     email: string
 }
+
+export interface loginBody {
+    email: string,
+    password: string
+}

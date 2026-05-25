@@ -3,7 +3,7 @@ import { createClient } from 'redis';
 import envConfig from '../../config/envConfig.js';
 import { logger } from '../../config/logger.js';
 
-const redisClient = createClient({
+export const redisClient = createClient({
     url: envConfig.REDIS_URL
 });
 

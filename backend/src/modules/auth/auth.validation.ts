@@ -23,3 +23,19 @@ export const registerSchema = z.object({
     })
 });
 
+
+
+export const loginSchema = z.object({
+    body: z.object({
+        email: z
+            .string({ error: "Email is required!" })
+            .trim()
+            .toLowerCase()
+            .email("Invalid email address format!"), // Built-in method use kiya
+
+        password: z
+            .string({ error: "Password is required!" })
+            .min(7, "Password must be at least 7 characters long!")
+    })
+});
+
