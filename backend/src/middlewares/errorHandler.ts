@@ -7,25 +7,36 @@ import type {
 import ApiError from '../utils/ApiError.js';
 
 const errorHandler = (
-    err: ApiError,
+    err: unknown,
     _: Request,
     res: Response,
     __: NextFunction
 ) => {
-    const statusCode =
-        err.statusCode || 500;
+    if (err instanceof ApiError) {
+        return res.status(err.statusCode).json({
+            success: false,
+            statusCode: err.statusCode,
+            message: err.message,
+            code: err.code,
+            errors: err.errors,
+            stack:
+                process.env.NODE_ENV ===
+                'development'
+                    ? err.stack
+                    : undefined
+        });
+    }
 
-    return res.status(statusCode).json({
+    return res.status(500).json({
         success: false,
-        statusCode,
-        message:
-            err.message ||
-            'Internal Server Error',
-        errors: err.errors || [],
+        statusCode: 500,
+        message: 'Internal Server Error',
+        code: 'INTERNAL_SERVER_ERROR',
+        errors: [],
         stack:
             process.env.NODE_ENV ===
-                'development'
-                ? err.stack
+            'development'
+                ? err
                 : undefined
     });
 };

@@ -9,9 +9,8 @@ import type {
 import envConfig from '../../config/envConfig.js';
 import ApiError from '../../utils/ApiError.js';
 
-
-
-interface JwtPayload {
+interface JwtPayload
+    extends jwt.JwtPayload {
     id: string;
 }
 
@@ -30,7 +29,7 @@ const authenticateToken = (
                     401,
                     'Access token missing',
                     [],
-                    ''
+                    'TOKEN_MISSING'
                 )
             );
         }
@@ -43,13 +42,29 @@ const authenticateToken = (
         req.user = decodedUser;
 
         next();
-    } catch {
+
+    } catch (error) {
+
+        if (
+            error instanceof
+            jwt.TokenExpiredError
+        ) {
+            return next(
+                new ApiError(
+                    401,
+                    'Access token expired',
+                    [],
+                    'TOKEN_EXPIRED'
+                )
+            );
+        }
+
         return next(
             new ApiError(
                 403,
-                'Invalid or expired token',
+                'Invalid token',
                 [],
-                ''
+                'INVALID_TOKEN'
             )
         );
     }
