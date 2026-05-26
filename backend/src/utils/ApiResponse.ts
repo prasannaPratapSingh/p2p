@@ -10,7 +10,7 @@ class ApiResponse<T> {
         data: T | null = null
     ) {
         this.statusCode = statusCode;
-        this.success = statusCode < 400;
+        this.success = true;
         this.message = message;
         this.data = data;
     }

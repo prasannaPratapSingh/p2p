@@ -17,7 +17,6 @@ interface CustomJwtPayload extends JwtPayload {
     id: string;
 }
 
-// Cookie options ko ek jagah rakh liya re-use karne ke liye
 const cookieOptions = {
     httpOnly: true,
     secure: envConfig.NODE_ENV === 'production',
@@ -30,7 +29,6 @@ export const register = asyncHandler(async (
     req: Request<{}, {}, registerBody>,
     res: Response) => {
     const { email, password, name } = req.body;
-
 
 
     if (!email || !password || !name) {
@@ -90,6 +88,13 @@ export const login = asyncHandler(async (
 
     const refreshToken = generateRefreshToken(String(user._id));
 
+    // refreshToken ko db me save krlo
+
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, envConfig.SALT_VALUE);
+
+    user.refreshToken = hashedRefreshToken;
+    await user.save();
+
     const cookieOptions: CookieOptions = {
         httpOnly: true,
         secure: envConfig.NODE_ENV === 'production',
@@ -103,74 +108,271 @@ export const login = asyncHandler(async (
     return res.status(200).json(new ApiResponse(200, "User logged in successfully!", { id: user.id, name: user.name, email: user.email }))
 })
 
-export const refreshToken = asyncHandler(async (req: Request, res: Response) => {
-    const refreshToken = req.cookies?.refreshToken;
+export const refreshToken =
+    asyncHandler(
+        async (
+            req: Request,
+            res: Response
+        ) => {
+            const refreshToken =
+                req.cookies?.refreshToken;
 
-    if (!refreshToken) {
-        throw new ApiError(401, "Refresh Token Missing!");
-    }
+            if (!refreshToken) {
+                throw new ApiError(
+                    401,
+                    'Refresh token missing'
+                );
+            }
 
-    const isBlackListed = await redisClient.get(`blacklist:${refreshToken}`);
+            // Check blacklist
 
-    if (isBlackListed) {
-        throw new ApiError(403, "Session revoked. This refresh token is blacklisted!");
-    }
+            const isBlacklisted =
+                await redisClient.get(
+                    `blacklist:${refreshToken}`
+                );
 
-    // Callback hata kar try-catch lagaya taaki async errors se server crash na ho
-    try {
-        const decoded = jwt.verify(
-            refreshToken,
-            envConfig.REFRESH_TOKEN_SECRET
-        ) as CustomJwtPayload;
+            if (isBlacklisted) {
+                throw new ApiError(
+                    403,
+                    'Session revoked'
+                );
+            }
 
-        if (!decoded || typeof decoded === "string" || !decoded.id) {
-            throw new ApiError(403, "Invalid refresh token format");
+            try {
+                // Verify refresh token
+
+                const decoded =
+                    jwt.verify(
+                        refreshToken,
+                        envConfig.REFRESH_TOKEN_SECRET
+                    ) as CustomJwtPayload;
+
+                // Find user
+
+                const currUser =
+                    await User.findById(
+                        decoded.id
+                    );
+
+                if (!currUser) {
+                    throw new ApiError(
+                        404,
+                        'User not found'
+                    );
+                }
+
+                // Ensure refresh token exists in DB
+
+                if (
+                    !currUser.refreshToken
+                ) {
+                    throw new ApiError(
+                        403,
+                        'No active session found'
+                    );
+                }
+
+                // Compare incoming token
+                // with hashed DB token
+
+                const isRefreshTokenValid =
+                    await bcrypt.compare(
+                        refreshToken,
+                        currUser.refreshToken
+                    );
+
+                if (
+                    !isRefreshTokenValid
+                ) {
+                    throw new ApiError(
+                        403,
+                        'Refresh token compromised'
+                    );
+                }
+
+                // TOKEN ROTATION
+
+                // Blacklist old refresh token
+
+                const ttl =
+                    decoded.exp! -
+                    Math.floor(
+                        Date.now() / 1000
+                    );
+
+                if (ttl > 0) {
+                    await redisClient.setEx(
+                        `blacklist:${refreshToken}`,
+                        ttl,
+                        'true'
+                    );
+                }
+
+                // Generate NEW tokens
+
+                const newAccessToken =
+                    generateAccessToken(
+                        decoded.id
+                    );
+
+                const newRefreshToken =
+                    generateRefreshToken(
+                        decoded.id
+                    );
+
+                // Hash NEW refresh token
+
+                const hashedRefreshToken =
+                    await bcrypt.hash(
+                        newRefreshToken,
+                        envConfig.SALT_VALUE
+                    );
+
+                // Save NEW hashed token in DB
+
+                currUser.refreshToken =
+                    hashedRefreshToken;
+
+                await currUser.save();
+
+                // Set cookies
+
+                res.cookie(
+                    'accessToken',
+                    newAccessToken,
+                    {
+                        ...cookieOptions,
+                        maxAge:
+                            15 *
+                            60 *
+                            1000
+                    }
+                );
+
+                res.cookie(
+                    'refreshToken',
+                    newRefreshToken,
+                    {
+                        ...cookieOptions,
+                        maxAge:
+                            7 *
+                            24 *
+                            60 *
+                            60 *
+                            1000
+                    }
+                );
+
+                return res
+                    .status(200)
+                    .json(
+                        new ApiResponse(
+                            200,
+                            'Access token refreshed successfully'
+                        )
+                    );
+            } catch (error) {
+                if (
+                    error instanceof
+                    ApiError
+                ) {
+                    throw error;
+                }
+
+                throw new ApiError(
+                    403,
+                    'Invalid or expired refresh token'
+                );
+            }
         }
-
-        // Aapka 'id' perfect use ho raha hai yahan
-        const newAccessToken = generateAccessToken(decoded.id);
-
-        res.cookie('accessToken', newAccessToken, {
-            ...cookieOptions,
-            maxAge: 15 * 60 * 1000
-        });
-
-        return res.status(200).json(
-            new ApiResponse(200, "Access token refreshed successfully")
-        );
-
-    } catch (error) {
-        throw new ApiError(403, "Invalid or expired refresh token");
-    }
-});
+    );
 
 // ==========================================
 // 2. LOGOUT CONTROLLER
 // ==========================================
-export const logout = asyncHandler(async (req: Request, res: Response) => {
-    const refreshToken = req.cookies?.refreshToken;
 
-    if (!refreshToken) {
-        throw new ApiError(403, "Refresh token is not available");
+export const logout = asyncHandler(
+    async (
+        req: Request,
+        res: Response
+    ) => {
+        const refreshToken =
+            req.cookies?.refreshToken;
+
+        // Even if token is missing,
+        // clear cookies anyway
+
+        if (!refreshToken) {
+            res.clearCookie(
+                'accessToken',
+                cookieOptions
+            );
+
+            res.clearCookie(
+                'refreshToken',
+                cookieOptions
+            );
+
+            return res.status(200).json(
+                new ApiResponse(
+                    200,
+                    'User logged out successfully!'
+                )
+            );
+        }
+
+        try {
+            const decoded = jwt.verify(
+                refreshToken,
+                envConfig.REFRESH_TOKEN_SECRET
+            ) as CustomJwtPayload;
+
+            const currUser =
+                await User.findById(
+                    decoded.id
+                );
+
+            if (currUser) {
+                currUser.refreshToken =
+                    null;
+
+                await currUser.save();
+            }
+
+            const ttl =
+                decoded.exp! -
+                Math.floor(
+                    Date.now() / 1000
+                );
+
+            if (ttl > 0) {
+                await redisClient.setEx(
+                    `blacklist:${refreshToken}`,
+                    ttl,
+                    'true'
+                );
+            }
+        } catch {
+            // ignore token verification errors
+            // logout should still succeed
+        }
+
+        res.clearCookie(
+            'accessToken',
+            cookieOptions
+        );
+
+        res.clearCookie(
+            'refreshToken',
+            cookieOptions
+        );
+
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                'User logged out successfully!'
+            )
+        );
     }
+);
 
-    const decoded = jwt.decode(refreshToken);
-
-    if (!decoded || typeof decoded === 'string' || !decoded.exp) {
-        throw new ApiError(400, 'Invalid refresh token');
-    }
-
-    const ttl = decoded.exp - Math.floor(Date.now() / 1000);
-
-    if (ttl > 0) {
-        await redisClient.setEx(`blacklist:${refreshToken}`, ttl, 'true');
-    }
-
-    // 🔥 FIX: clearCookie mein options dena zaroori hai, nahi toh cookie delete nahi hogi
-    res.clearCookie('accessToken', cookieOptions);
-    res.clearCookie('refreshToken', cookieOptions);
-
-    return res.status(200).json(
-        new ApiResponse(200, "User logged out successfully!")
-    );
-});
