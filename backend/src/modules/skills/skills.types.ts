@@ -1,7 +1,7 @@
-import { Schema, Document } from "mongoose";
+import { Schema, Document, Types } from "mongoose";
 
 export interface ISkillProfile extends Document {
-    userId: Schema.Types.ObjectId;
+    userId: Types.ObjectId;
     skillsToLearn: string[];
     skillsToTeach: string[];
     rating: number;

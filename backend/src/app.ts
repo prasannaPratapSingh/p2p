@@ -9,6 +9,8 @@ import ApiResponse from './utils/ApiResponse.js';
 import authRouter from './modules/auth/auth.routes.js'
 import skillRouter from './modules/skills/skills.routes.js';
 import walletRouter from './modules/wallet/wallet.routes.js';
+import matchRouter from './modules/match/match.routes.js';
+import connectionRouter from './modules/connections/connections.routes.js';
 
 const app = express();
 
@@ -36,7 +38,8 @@ app.get(
 
 app.use('/api/skills', skillRouter);
 app.use('/api/wallet', walletRouter);
-
+app.use('/api/match', matchRouter);
+app.use('/api/connection', connectionRouter);
 
 app.use(errorHandler);
 
