@@ -11,3 +11,8 @@ export interface ISkillProfile extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface skillPayload {
+    skillsToLearn?: string[],
+    skillsToTeach?: string[] 
+}

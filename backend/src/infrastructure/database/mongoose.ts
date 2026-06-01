@@ -5,7 +5,7 @@ import { logger } from "../../config/logger.js";
 const connectDB = async () => {
     try {
         const connectionInstace = await mongoose.connect(envConfig.DB_URL);
-        logger.info(`MongoDB connected: ${connectionInstace.connection.host}`);
+        logger.info(`MongoDB connected: ${connectionInstace.connection.host} 🧸`);
     } catch (error) {
         logger.error("MongoDB connection failed!");
         process.exit(1);
