@@ -7,6 +7,7 @@ import asyncHandler from './utils/asyncHandler.js';
 import ApiResponse from './utils/ApiResponse.js';
 
 import authRouter from './modules/auth/auth.routes.js'
+import skillRouter from './modules/skills/skills.routes.js';
 
 const app = express();
 
@@ -31,6 +32,8 @@ app.get(
         );
     })
 );
+
+app.use('/api/skills', skillRouter);
 
 app.use(errorHandler);
 

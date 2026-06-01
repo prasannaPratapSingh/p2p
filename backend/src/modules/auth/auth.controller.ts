@@ -287,10 +287,6 @@ export const refreshToken =
         }
     );
 
-// ==========================================
-// 2. LOGOUT CONTROLLER
-// ==========================================
-
 export const logout = asyncHandler(
     async (
         req: Request,
