@@ -19,7 +19,7 @@ export const skillsUpdate = asyncHandler(async (
         if (!currentUser || !currentUser.id) {
             throw new ApiError(401, "Unauthorized!")
         }
-        
+
 
         const updateQuery: any = { lastActiveAt: new Date() };
 
@@ -51,6 +51,55 @@ export const skillsUpdate = asyncHandler(async (
         }
 
         return res.status(200).json(new ApiResponse(200, "Skills profile synchronized successfully !", updateProfile))
+
+    } catch (error) {
+        next(error)
+    }
+
+})
+
+export const getMySkills = asyncHandler(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+
+        const currentUser = req.user;
+
+        if (!currentUser || !currentUser.id) {
+
+            throw new ApiError(401, "User authentication falied. Token missing or invalid!")
+        }
+
+
+        const profile = await SkillProfile.findOne(
+            { userId: currentUser.id }
+        )
+
+        if (!profile) {
+            return res.status(200).json(
+                new ApiResponse(200,
+                    "User did not saved the skills yet. Returning the empty arrays!",
+                    {
+                        userId: currentUser.id,
+                        skillsToLearn: [],
+                        skillsToTeach: []
+                    }
+                )
+            )
+        }
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    "Skills profile fetched successfully.",
+                    profile
+                )
+            );
+
 
     } catch (error) {
         next(error)
