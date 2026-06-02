@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import errorHandler from './middlewares/errorHandler.js';
 import asyncHandler from './utils/asyncHandler.js';
 import ApiResponse from './utils/ApiResponse.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.js';
 
 import authRouter from './modules/auth/auth.routes.js'
 import skillRouter from './modules/skills/skills.routes.js';
@@ -40,6 +42,9 @@ app.use('/api/skills', skillRouter);
 app.use('/api/wallet', walletRouter);
 app.use('/api/match', matchRouter);
 app.use('/api/connection', connectionRouter);
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/api/docs.json', (_, res) => res.json(swaggerDocument));
 
 app.use(errorHandler);
 
