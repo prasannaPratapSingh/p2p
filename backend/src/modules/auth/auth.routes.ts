@@ -6,11 +6,29 @@ import { strictAuthLimiter } from "../../middlewares/rateLimiter.middleware.js";
 
 const router = Router();
 
+/**
+ * POST /api/auth/register
+ * Body params: { email, password, name }
+ */
 router.post('/register', validateRequest(registerSchema), register);
-router.post('/login', strictAuthLimiter, validateRequest(loginSchema), login);
-router.post('/refresh', refreshToken);
-router.post('/logout', logout);
 
+/**
+ * POST /api/auth/login
+ * Body params: { email, password }
+ */
+router.post('/login', strictAuthLimiter, validateRequest(loginSchema), login);
+
+/**
+ * POST /api/auth/refresh
+ * Cookies: refreshToken
+ */
+router.post('/refresh', refreshToken);
+
+/**
+ * POST /api/auth/logout
+ * Cookies: refreshToken
+ */
+router.post('/logout', logout);
 
 export default router;
 

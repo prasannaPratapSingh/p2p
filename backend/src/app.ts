@@ -25,6 +25,11 @@ app.use(morgan('dev'));
 
 app.use('/api/auth', authRouter);
 
+/**
+ * GET /api/healthcheck
+ * Params: none
+ * Returns: server uptime and health status
+ */
 app.get(
     '/api/healthcheck',
     asyncHandler(async (_, res) => {
