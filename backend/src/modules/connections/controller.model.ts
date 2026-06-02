@@ -5,7 +5,7 @@ const connectionSchema = new Schema<IConnection>(
     {
         senderId: {
             type: Schema.Types.ObjectId,
-            ref: "User", 
+            ref: "User",
             required: true,
             index: true,
         },
@@ -21,6 +21,10 @@ const connectionSchema = new Schema<IConnection>(
             default: "pending",
             index: true,
         },
+        proposedTime: { type: Date, required: true },
+        scheduledTime: { type: Date },
+        meetingLink: { type: String, default: "" },
+        meetingRoomId: { type: String, default: "" },
     },
     { timestamps: true }
 );

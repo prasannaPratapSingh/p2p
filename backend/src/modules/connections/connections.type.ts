@@ -4,12 +4,18 @@ export interface IConnection extends Document {
     receiverId: Types.ObjectId,
     status: "pending" | "accepted" | "rejected" | "completed" | "cancelled",
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    proposedTime: Date,
+    scheduledTime?: Date,
+    meetingLink?: string,
+    meetingRoomId?: string
+
 
 }
 
 export interface connectionRequest {
     receiverId: string
+    proposedTime:Date
 }
 
 export interface acceptConnectionRequest {
