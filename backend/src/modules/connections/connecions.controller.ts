@@ -291,3 +291,42 @@ export const completeConnectionSwap = asyncHandler(async (
         next(error);
     }
 })
+
+
+
+//MY CONNECTIONS - FINDS ALL THE CONNECTIONS WITH STATUS ACCEPTED.
+ 
+export const getMyConnections = asyncHandler(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const currentUserId = req.user.id;
+
+        if (!currentUserId) {
+            throw new ApiError(401, "Unauthorized.");
+        }
+
+        const connections = await Connection.find({
+            status: "accepted",
+            $or: [
+                { senderId: currentUserId },
+                { receiverId: currentUserId }
+            ]
+        })
+            .populate("senderId", "name email")
+            .populate("receiverId", "name email")
+            .sort({ scheduledTime: 1 });
+
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                "Connections fetched successfully.",
+                connections
+            )
+        );
+    } catch (error) {
+        next(error);
+    }
+});
