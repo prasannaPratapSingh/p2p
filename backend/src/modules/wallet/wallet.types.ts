@@ -1,8 +1,8 @@
-import { Schema, Document } from "mongoose";
+import { Schema, Document ,Types} from "mongoose";
 
 
 export interface IWallet extends Document {
-    userId: Schema.Types.ObjectId;
+    userId: Types.ObjectId;
     balance: number;
     escrowBalance: number;
     currency: string;
