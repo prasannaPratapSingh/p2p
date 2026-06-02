@@ -7,7 +7,6 @@ import { Connection } from "../connections/controller.model.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import { WalletModel } from "../wallet/wallet.model.js";
-import envConfig from "../../config/envConfig.js";
 import { logger } from "../../config/logger.js";
 import getJitsiMeetingLink from "./connections.utils.js";
 
@@ -292,10 +291,8 @@ export const completeConnectionSwap = asyncHandler(async (
     }
 })
 
-
-
 //MY CONNECTIONS - FINDS ALL THE CONNECTIONS WITH STATUS ACCEPTED.
- 
+
 export const getMyConnections = asyncHandler(async (
     req: Request,
     res: Response,
@@ -319,7 +316,7 @@ export const getMyConnections = asyncHandler(async (
             .populate("receiverId", "name email")
             .sort({ scheduledTime: 1 });
 
-            console.log("Fetched Connections:", connections);
+        console.log("Fetched Connections:", connections);
 
 
         return res.status(200).json(
@@ -333,3 +330,34 @@ export const getMyConnections = asyncHandler(async (
         next(error);
     }
 });
+
+export const cancelConnection = asyncHandler(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+    try {
+        const userId = req.user.id;
+        const { connectionId } = req.body;
+
+        if (!userId) {
+            throw new ApiError(400, "UserID not provided!");
+        }
+
+        if (!connectionId) {
+            throw new ApiError(400, "ConnectioID is not given!");
+        }
+
+        const targetMeeting = await Connection.findOneAndUpdate({ _id: connectionId, senderId: userId, status: "pending" }, { status: "cancelled" });
+
+        if (!targetMeeting) {
+            throw new ApiError(400, "No such meeting exists!");
+        }
+
+        return res.status(200).json(new ApiResponse(200, "Your current connection cancelled successfully", []));
+    } catch (error) {
+        next(error);
+    }
+
+})

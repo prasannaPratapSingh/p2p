@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { completeConnectionSwap, respondToConnectionRequest, sendConnectionRequest , getMyConnections } from "./connecions.controller.js";
+import { completeConnectionSwap, respondToConnectionRequest, sendConnectionRequest, getMyConnections, cancelConnection } from "./connecions.controller.js";
 import authenticateToken from "../auth/auth.middleware.js";
 
 const router = Router();
@@ -31,5 +31,8 @@ router.post('/complete', authenticateToken, completeConnectionSwap);
  * Auth: required
  */
 router.get('/me', authenticateToken, getMyConnections);
+
+
+router.post('/cancel', authenticateToken, cancelConnection);
 
 export default router;
