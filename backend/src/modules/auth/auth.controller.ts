@@ -4,7 +4,7 @@ import type { loginBody, registerBody } from "./auth.type.js";
 import ApiError from "../../utils/ApiError.js";
 import bcrypt from "bcryptjs";
 import envConfig from "../../config/envConfig.js";
-import User from "../user/user.model.js";
+import User from "../../models/user/user.model.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import { generateAccessToken, generateRefreshToken } from "./auth.utils.js";
 import { redisClient } from "../../infrastructure/redis/redis.js";
@@ -105,7 +105,7 @@ export const login = asyncHandler(async (
 
     res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 })
 
-    return res.status(200).json(new ApiResponse(200, "User logged in successfully!", { id: user.id, name: user.name, email: user.email }))
+    return res.status(200).json(new ApiResponse(200, "User logged in successfully!", { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatarUrl }));
 })
 
 export const refreshToken =
