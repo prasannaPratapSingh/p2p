@@ -7,6 +7,9 @@ import { Connection } from "../connections/controller.model.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import mongoose from "mongoose";
 import { WalletModel } from "../wallet/wallet.model.js";
+import envConfig from "../../config/envConfig.js";
+import { logger } from "../../config/logger.js";
+import getJitsiMeetingLink from "./connections.utils.js";
 
 export const sendConnectionRequest = asyncHandler(async (
     req: Request<{}, {}, connectionRequest>,
@@ -15,11 +18,18 @@ export const sendConnectionRequest = asyncHandler(async (
 ) => {
     try {
         const senderId = req.user.id;
-        const { receiverId } = req.body;
+        const { receiverId, proposedTime } = req.body;
 
-        if (!receiverId) {
-            throw new ApiError(400, "Receiver identity is required.");
+        if (!receiverId || !proposedTime) {
+            throw new ApiError(400, "Receiver identity and propposed time is required.");
         }
+
+        const meetingDate = new Date(proposedTime);
+        if (isNaN(meetingDate.getTime()) || meetingDate <= new Date()) {
+            throw new ApiError(400, "Proposed time must be a valid future date.");
+        }
+
+
 
         if (senderId.toString() === receiverId.toString()) {
             throw new ApiError(400, "You cannot send swap-request to yoursel");
@@ -29,6 +39,30 @@ export const sendConnectionRequest = asyncHandler(async (
 
         if (!targetProfile) {
             throw new ApiError(404, "Target user does not have a skill profile. They need to create one before you can send a connection request.");
+        }
+
+        // calendar check 
+        const MEETING_WINDOW_LIMIT = 60 * 60 * 1000;
+        const bufferStart = new Date(meetingDate.getTime() - MEETING_WINDOW_LIMIT);
+        const bufferEnd = new Date(meetingDate.getTime() + MEETING_WINDOW_LIMIT);
+
+        const senderConflict = await Connection.findOne({
+            status: "accepted",
+            $or: [{ senderId: senderId }, { receiverId: receiverId }],
+            proposedTime: { $gt: bufferStart, $lt: bufferEnd }
+        })
+
+        if (senderConflict) {
+            throw new ApiError(400, "You have another swap session scheduled around this time slot.");
+        }
+
+        const receiverConflict = await Connection.findOne({
+            status: "accepted",
+            $or: [{ senderId: receiverId }, { receiverId: receiverId }],
+            scheduledTime: { $gt: bufferStart, $lt: bufferEnd }
+        });
+        if (receiverConflict) {
+            throw new ApiError(400, "This peer is already booked for another session in this time window.");
         }
 
         const existingConnection = await Connection.findOne({
@@ -50,6 +84,7 @@ export const sendConnectionRequest = asyncHandler(async (
         const newRequest = await Connection.create({
             senderId,
             receiverId,
+            proposedTime: meetingDate,
             status: "pending"
         })
 
@@ -106,6 +141,26 @@ export const respondToConnectionRequest = asyncHandler(async (
                 .json(new ApiResponse(200, "Connection request declined successfully.", connection));
         }
 
+
+        const ONE_HOUR = 60 * 60 * 1000;
+        const bufferStart = new Date(connection.proposedTime.getTime() - ONE_HOUR);
+        const bufferEnd = new Date(connection.proposedTime.getTime() + ONE_HOUR);
+
+        const absoluteConflict = await Connection.findOne({
+            status: "accepted",
+            $or: [
+                { senderId: connection.senderId }, { receiverId: connection.senderId },
+                { senderId: receiverId }, { receiverId: receiverId }
+            ],
+            scheduledTime: { $gt: bufferStart, $lt: bufferEnd }
+        }).session(session);
+
+        if (absoluteConflict) {
+            throw new ApiError(400, "Concurrency Lock: One of the participants is no longer free in this slot.");
+        }
+
+
+
         const senderWallet = await WalletModel.findOne({ userId: connection.senderId }).session(session);
         const receiverWallet = await WalletModel.findOne({ userId: receiverId }).session(session);
 
@@ -128,7 +183,18 @@ export const respondToConnectionRequest = asyncHandler(async (
         receiverWallet.escrowBalance += 1.0;
         await receiverWallet.save({ session });
 
+
+
+        // yaha se ab jitsi ka integration karna hai, meeting room create karna hai, link generate karna hai, aur connection document me save karna hai proposed time ke hisab se.
+
+        const { meetingLink, meetingRoomId } = getJitsiMeetingLink(connection.id);
+
+        logger.info(meetingLink, meetingRoomId);
+
         connection.status = "accepted";
+        connection.scheduledTime = connection.proposedTime;
+        connection.meetingRoomId = meetingRoomId;
+        connection.meetingLink = meetingLink;
         await connection.save({ session });
 
         await session.commitTransaction();
@@ -224,9 +290,4 @@ export const completeConnectionSwap = asyncHandler(async (
         session.endSession();
         next(error);
     }
-
-
-
-
-
 })
