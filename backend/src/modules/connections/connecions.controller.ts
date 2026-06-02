@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import { WalletModel } from "../wallet/wallet.model.js";
 import envConfig from "../../config/envConfig.js";
 import { logger } from "../../config/logger.js";
+import getJitsiMeetingLink from "./connections.utils.js";
 
 export const sendConnectionRequest = asyncHandler(async (
     req: Request<{}, {}, connectionRequest>,
@@ -140,6 +141,26 @@ export const respondToConnectionRequest = asyncHandler(async (
                 .json(new ApiResponse(200, "Connection request declined successfully.", connection));
         }
 
+
+        const ONE_HOUR = 60 * 60 * 1000;
+        const bufferStart = new Date(connection.proposedTime.getTime() - ONE_HOUR);
+        const bufferEnd = new Date(connection.proposedTime.getTime() + ONE_HOUR);
+
+        const absoluteConflict = await Connection.findOne({
+            status: "accepted",
+            $or: [
+                { senderId: connection.senderId }, { receiverId: connection.senderId },
+                { senderId: receiverId }, { receiverId: receiverId }
+            ],
+            scheduledTime: { $gt: bufferStart, $lt: bufferEnd }
+        }).session(session);
+
+        if (absoluteConflict) {
+            throw new ApiError(400, "Concurrency Lock: One of the participants is no longer free in this slot.");
+        }
+
+
+
         const senderWallet = await WalletModel.findOne({ userId: connection.senderId }).session(session);
         const receiverWallet = await WalletModel.findOne({ userId: receiverId }).session(session);
 
@@ -162,7 +183,18 @@ export const respondToConnectionRequest = asyncHandler(async (
         receiverWallet.escrowBalance += 1.0;
         await receiverWallet.save({ session });
 
+
+
+        // yaha se ab jitsi ka integration karna hai, meeting room create karna hai, link generate karna hai, aur connection document me save karna hai proposed time ke hisab se.
+
+        const { meetingLink, meetingRoomId } = getJitsiMeetingLink(connection.id);
+
+        logger.info(meetingLink, meetingRoomId);
+
         connection.status = "accepted";
+        connection.scheduledTime = connection.proposedTime;
+        connection.meetingRoomId = meetingRoomId;
+        connection.meetingLink = meetingLink;
         await connection.save({ session });
 
         await session.commitTransaction();
@@ -258,9 +290,4 @@ export const completeConnectionSwap = asyncHandler(async (
         session.endSession();
         next(error);
     }
-
-
-
-
-
 })
