@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
-import User from "../modules/user/user.model.js";
+import User from "../models/user/user.model.js";
 import envConfig from "../config/envConfig.js";
 
 
