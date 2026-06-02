@@ -32,6 +32,15 @@ if (!process.env.SALT_VALUE) {
     process.exit(1);
 }
 
+if (!process.env.IMAGEKIT_PRIVATE_KEY) {
+    logger.error("IMAGEKIT_PRIVATE_KEY env variable does not loaded successfully!");
+    process.exit(1);
+}
+if (!process.env.IMAGEKIT_PUBLIC_KEY) {
+    logger.error("IMAGEKIT_PUBLIC_KEY env variable does not loaded successfully!");
+    process.exit(1);
+}
+
 // 1. Bug Fix: Lowercase primitive types used here
 interface EnvConfig {
     PORT: number;
@@ -41,6 +50,8 @@ interface EnvConfig {
     REFRESH_TOKEN_SECRET: string;
     REDIS_URL: string;
     SALT_VALUE: number;
+    IMAGEKIT_PRIVATE_KEY: string
+    IMAGEKIT_PUBLIC_KEY: string
 }
 
 // 2. Bug Fix: Added string fallbacks to satisfy TS strict null checks
@@ -51,7 +62,9 @@ const envConfig: EnvConfig = {
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET || "",
     REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || "",
     REDIS_URL: process.env.REDIS_URL || "",
-    SALT_VALUE: Number(process.env.SALT_VALUE)
+    SALT_VALUE: Number(process.env.SALT_VALUE),
+    IMAGEKIT_PRIVATE_KEY:process.env.IMAGEKIT_PRIVATE_KEY,
+    IMAGEKIT_PUBLIC_KEY:process.env.IMAGEKIT_PUBLIC_KEY
 };
 
 export default envConfig;

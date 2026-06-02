@@ -13,6 +13,7 @@ import skillRouter from './modules/skills/skills.routes.js';
 import walletRouter from './modules/wallet/wallet.routes.js';
 import matchRouter from './modules/match/match.routes.js';
 import connectionRouter from './modules/connections/connections.routes.js';
+import profileRouter from './modules/profile/profile.routes.js';
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/skills', skillRouter);
 app.use('/api/wallet', walletRouter);
 app.use('/api/match', matchRouter);
 app.use('/api/connection', connectionRouter);
+app.use('/api/profile', profileRouter)
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/api/docs.json', (_, res) => res.json(swaggerDocument));
