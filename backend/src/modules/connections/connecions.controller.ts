@@ -309,7 +309,7 @@ export const getMyConnections = asyncHandler(async (
         }
 
         const connections = await Connection.find({
-            status: "accepted",
+            status: { $in: ["accepted", "completed"] },
             $or: [
                 { senderId: currentUserId },
                 { receiverId: currentUserId }
@@ -318,6 +318,9 @@ export const getMyConnections = asyncHandler(async (
             .populate("senderId", "name email")
             .populate("receiverId", "name email")
             .sort({ scheduledTime: 1 });
+
+            console.log("Fetched Connections:", connections);
+
 
         return res.status(200).json(
             new ApiResponse(
