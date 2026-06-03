@@ -1,4 +1,4 @@
-import type { Response, Request, CookieOptions } from "express";
+import type { Response, Request, CookieOptions, NextFunction } from "express";
 import asyncHandler from "../../utils/asyncHandler.js";
 import type { loginBody, registerBody } from "./auth.type.js";
 import ApiError from "../../utils/ApiError.js";
@@ -20,7 +20,7 @@ interface CustomJwtPayload extends JwtPayload {
 const cookieOptions = {
     httpOnly: true,
     secure: envConfig.NODE_ENV === 'production',
-    sameSite: 'strict' as const
+    sameSite: envConfig.NODE_ENV === 'production' ? 'strict' as const : 'lax' as const,
 };
 
 
@@ -372,3 +372,27 @@ export const logout = asyncHandler(
     }
 );
 
+export const getMe = asyncHandler(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+    try {
+        const userId = req.user.id;
+        if (!userId) {
+            throw new ApiError(400, "UserId not found!");
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            throw new ApiError(400, "No such user exists!");
+        }
+        return res.status(200).json(new ApiResponse(200, "User data fetched successfully!", { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatarUrl }));
+
+    } catch (error) {
+        next(error);
+    }
+
+})
