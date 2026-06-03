@@ -2,7 +2,7 @@ import { Outlet } from "react-router"
 import Navbar from "../features/shared/components/Navbar"
 
 
-const AppLayout = () => {
+const AppLayout = (): React.ReactNode => {
     return (
         <>
             <Navbar />
