@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux"
 import type { loginBody, registerBody } from "../../../types/auth.type"
 import { setError, setLoading, setUser } from "../state/auth.slice";
+import { clearProfile } from '../../profile/state/profile.slice';
 import { getMeUuser, login, logout, register } from "../service/authService";
 
 export const useAuth = () => {
@@ -40,6 +41,7 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             await logout();
             dispatch(setUser(null));
+            dispatch(clearProfile());
             return null;
         } catch (error: any) {
             dispatch(setError(error?.response?.data?.message || error?.message || 'Logout failed'));
