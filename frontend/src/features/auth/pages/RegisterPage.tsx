@@ -50,11 +50,6 @@ const RegisterPage = () => {
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-slate-50 relative overflow-hidden flex items-center justify-center font-sans">
-            {/* Animated Background Elements */}
-            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600/30 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen"></div>
-            <div className="absolute top-[40%] left-[20%] w-72 h-72 bg-pink-500/20 rounded-full blur-[100px] mix-blend-screen"></div>
-
             <div className="mx-auto flex w-full max-w-6xl flex-col lg:flex-row-reverse rounded-[2.5rem] overflow-hidden bg-white/[0.02] border border-white/10 shadow-2xl backdrop-blur-2xl relative z-10">
 
                 {/* Form Section */}
@@ -162,7 +157,7 @@ const RegisterPage = () => {
 
                 {/* Visual Section */}
                 <div className="hidden lg:flex flex-1 relative bg-indigo-900/20 overflow-hidden items-center justify-center p-12">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 z-0"></div>
+                    <div className="absolute inset-0 bg-indigo-900/40 z-0"></div>
                     <img
                         src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
                         alt="Team collaboration"

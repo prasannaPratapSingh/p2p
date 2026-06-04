@@ -1,16 +1,34 @@
 import { useNavigate } from "react-router";
 import Navbar from "../components/Navbar";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const heroTextRef = useRef<HTMLDivElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    gsap.from(heroTextRef.current, {
+      y: 30,
+      opacity: 0,
+      duration: 1.4,
+      delay: 0.4,
+      ease: "power3.out"
+    });
+
+    gsap.from(heroImageRef.current, {
+      x: 100,
+      opacity: 0,
+      duration: 1.4,
+      delay: 0.8,
+      ease: "power3.out"
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-slate-50 relative overflow-clip font-sans">
-      {/* Animated Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen pointer-events-none"></div>
-      <div className="absolute top-[40%] left-[30%] w-[30rem] h-[30rem] bg-pink-500/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none"></div>
-
       <Navbar />
 
       <main className="relative z-10">
@@ -18,13 +36,13 @@ const LandingPage = () => {
         <section className="px-6 pt-12 pb-20 lg:pt-20 lg:pb-32 max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             {/* Left side text */}
-            <div className="max-w-2xl text-left mx-auto">
+            <div ref={heroTextRef} className="max-w-2xl text-left mx-auto">
               <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-widest uppercase mb-6">
                 The Ultimate Skill Network
               </span>
               <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
                 Master skills with <br className="hidden lg:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">trusted peers.</span>
+                <span className="">trusted peers.</span>
               </h1>
               <p className="text-lg text-slate-400 mb-10 max-w-xl leading-relaxed">
                 Join a modern community of ambitious learners. Share knowledge, find collaborators, and accelerate your growth through meaningful peer-to-peer exchanges.
@@ -46,9 +64,9 @@ const LandingPage = () => {
             </div>
 
             {/* Right side card/image */}
-            <div className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto">
+            <div ref={heroImageRef} className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto">
               <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl aspect-square sm:aspect-[5/4] lg:aspect-square">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 z-10 mix-blend-overlay"></div>
+                <div className="absolute inset-0  z-10 mix-blend-overlay"></div>
                 <img
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
                   alt="Students collaborating"
@@ -59,7 +77,7 @@ const LandingPage = () => {
                 <div className="absolute bottom-6 left-6 right-6 z-20">
                   <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-5 transform hover:scale-[1.02] transition-transform duration-500 shadow-2xl">
                     <div className="flex items-center gap-3 mb-2 sm:mb-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5">
+                      <div className="w-10 h-10 rounded-full  p-0.5">
                         <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" alt="Avatar" className="w-full h-full rounded-full object-cover border-2 border-black" />
                       </div>
                       <div>
@@ -89,14 +107,14 @@ const LandingPage = () => {
           <div className="max-w-7xl mx-auto">
             
             <div className="text-center mb-16">
-               <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Everything you need to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">succeed</span></h2>
+               <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Everything you need to <span className="">succeed</span></h2>
                <p className="text-slate-400 max-w-2xl mx-auto text-lg">A suite of powerful tools designed to make peer-to-peer learning as seamless and effective as possible.</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
               {/* Feature 1 */}
               <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="absolute inset-0  opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                 <div className="relative w-12 h-12 mb-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(79,70,229,0.3)] transition-all duration-500">
                   <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -110,7 +128,7 @@ const LandingPage = () => {
 
               {/* Feature 2 */}
               <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="absolute inset-0  opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                 <div className="relative w-12 h-12 mb-6 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.3)] transition-all duration-500">
                   <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -124,7 +142,7 @@ const LandingPage = () => {
 
               {/* Feature 3 (New: 1:1 Meeting Room with Jitsi) */}
               <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="absolute inset-0  opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                 <div className="relative w-12 h-12 mb-6 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-500">
                   <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -138,7 +156,7 @@ const LandingPage = () => {
 
               {/* Feature 4 */}
               <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-pink-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="absolute inset-0  opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                 <div className="relative w-12 h-12 mb-6 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(236,72,153,0.3)] transition-all duration-500">
                   <svg className="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -157,13 +175,13 @@ const LandingPage = () => {
         <section className="px-6 py-24 bg-[#0a0a0a] relative z-10 border-t border-white/5">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">How it <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">works</span></h2>
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">How it <span className="">works</span></h2>
               <p className="text-slate-400 max-w-2xl mx-auto text-lg">Three simple steps to start learning and growing with peers around the world.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 relative">
               {/* Connection Line (Desktop only) */}
-              <div className="hidden md:block absolute top-[4rem] left-[15%] right-[15%] h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+              <div className="hidden md:block absolute top-[4rem] left-[15%] right-[15%] h-[1px]  z-0"></div>
 
               {/* Step 1 */}
               <div className="relative z-10 flex flex-col items-center text-center p-8 rounded-3xl bg-white/[0.02] border border-white/5 shadow-xl backdrop-blur-sm">
@@ -191,7 +209,7 @@ const LandingPage = () => {
 
         {/* Stats Section */}
         <section className="px-6 py-20 border-y border-white/5 relative z-10 overflow-hidden bg-[#050508]">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/5 via-purple-900/5 to-indigo-900/5"></div>
+          <div className="absolute inset-0 "></div>
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>

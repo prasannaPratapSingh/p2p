@@ -23,23 +23,23 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-slate-100 lg:px-10">
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="text-lg font-semibold text-white hover:text-cyan-300"
+          className="text-lg font-semibold text-white hover:text-indigo-400 transition-colors"
         >
           Peer2Peer
         </button>
 
         {user ? (
           <div className="flex items-center gap-4 text-sm font-medium">
-            <div className="flex items-center gap-3 rounded-full border border-slate-700 bg-slate-900/80 pl-2 pr-4 py-1 text-slate-100">
+            <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 pl-2 pr-4 py-1 text-slate-100">
               {avatarUrl ? (
-                <img src={avatarUrl} alt={displayName} className="w-8 h-8 rounded-full object-cover border border-slate-600" />
+                <img src={avatarUrl} alt={displayName} className="w-8 h-8 rounded-full object-cover border border-white/10" />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold">
+                <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -48,14 +48,14 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => navigate('/dashboard')}
-              className="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-slate-100 transition hover:border-cyan-400 hover:text-white"
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-slate-100 transition hover:border-indigo-500 hover:text-white"
             >
               Dashboard
             </button>
             <button
               type="button"
               onClick={handleSignOut}
-              className="rounded-full bg-rose-500 px-4 py-2 text-white transition hover:bg-rose-400"
+              className="rounded-full bg-rose-600 px-4 py-2 text-white transition hover:bg-rose-500"
             >
               Logout
             </button>
@@ -65,14 +65,14 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => navigate('/login')}
-              className="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-slate-100 transition hover:border-cyan-400 hover:text-white"
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-slate-300 transition hover:border-white/20 hover:text-white"
             >
               Sign In
             </button>
             <button
               type="button"
               onClick={() => navigate('/register')}
-              className="rounded-full bg-cyan-500 px-4 py-2 text-slate-950 transition hover:bg-cyan-400"
+              className="rounded-full bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-500"
             >
               Sign Up
             </button>
