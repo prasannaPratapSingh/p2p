@@ -22,7 +22,7 @@ const RegisterPage = () => {
             console.log('Registration attempt', data);
             const user = await handleRegister(data) as any;
 
-            if (user?.success) {
+            if (user) {
                 navigate('/login');
             }
         } catch (error: any) {

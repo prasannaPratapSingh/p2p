@@ -8,8 +8,10 @@ const Navbar = () => {
   const auth = useSelector((state: any) => state.auth);
   const user = auth?.user;
 
-  const displayName =
-    user?.user?.name || user?.name || user?.email || user?.username || "Member";
+
+  const displayName = user?.data?.name || "Member";
+  const avatarUrl = user?.data?.avatarUrl
+
 
   const handleSignOut = async () => {
     try {
@@ -33,8 +35,15 @@ const Navbar = () => {
 
         {user ? (
           <div className="flex items-center gap-4 text-sm font-medium">
-            <div className="rounded-full border border-slate-700 bg-slate-900/80 px-4 py-2 text-slate-100">
-              {displayName}
+            <div className="flex items-center gap-3 rounded-full border border-slate-700 bg-slate-900/80 pl-2 pr-4 py-1 text-slate-100">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} className="w-8 h-8 rounded-full object-cover border border-slate-600" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold">
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span>{displayName}</span>
             </div>
             <button
               type="button"

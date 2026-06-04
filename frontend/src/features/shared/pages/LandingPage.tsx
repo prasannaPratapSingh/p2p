@@ -1,42 +1,17 @@
 import { useNavigate } from "react-router";
+import Navbar from "../components/Navbar";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-slate-50 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#0a0a0a] text-slate-50 relative overflow-clip font-sans">
       {/* Animated Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen pointer-events-none"></div>
       <div className="absolute top-[40%] left-[30%] w-[30rem] h-[30rem] bg-pink-500/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none"></div>
 
-      {/* Navigation */}
-      <nav className="relative z-10 border-b border-white/5 bg-black/20 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">Peer2Peer</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/login')}
-              className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => navigate('/register')}
-              className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)]"
-            >
-              Get Started
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="relative z-10">
         {/* Hero Section */}
@@ -173,6 +148,67 @@ const LandingPage = () => {
                 <p className="relative text-slate-400 leading-relaxed text-sm md:text-base">
                   Stay motivated with a supportive community. Track your progress, earn endorsements, and build a portfolio as you master new disciplines.
                 </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How it Works Section */}
+        <section className="px-6 py-24 bg-[#0a0a0a] relative z-10 border-t border-white/5">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">How it <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">works</span></h2>
+              <p className="text-slate-400 max-w-2xl mx-auto text-lg">Three simple steps to start learning and growing with peers around the world.</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 relative">
+              {/* Connection Line (Desktop only) */}
+              <div className="hidden md:block absolute top-[4rem] left-[15%] right-[15%] h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+
+              {/* Step 1 */}
+              <div className="relative z-10 flex flex-col items-center text-center p-8 rounded-3xl bg-white/[0.02] border border-white/5 shadow-xl backdrop-blur-sm">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xl mb-6 shadow-[0_0_20px_rgba(16,185,129,0.2)]">1</div>
+                <h3 className="text-xl font-bold text-white mb-3">Create your profile</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">Tell us what you know and what you want to learn. Our algorithm matches you with the perfect peers.</p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="relative z-10 flex flex-col items-center text-center p-8 rounded-3xl bg-white/[0.02] border border-white/5 shadow-xl backdrop-blur-sm">
+                <div className="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-xl mb-6 shadow-[0_0_20px_rgba(6,182,212,0.2)]">2</div>
+                <h3 className="text-xl font-bold text-white mb-3">Connect & Schedule</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">Browse your matches, send a request, and book a 1:1 session at a time that works for both of you.</p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="relative z-10 flex flex-col items-center text-center p-8 rounded-3xl bg-white/[0.02] border border-white/5 shadow-xl backdrop-blur-sm">
+                <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-xl mb-6 shadow-[0_0_20px_rgba(99,102,241,0.2)]">3</div>
+                <h3 className="text-xl font-bold text-white mb-3">Learn in our Rooms</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">Jump into your dedicated virtual room. Share your screen, chat, and exchange skills in real-time.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="px-6 py-20 border-y border-white/5 relative z-10 overflow-hidden bg-[#050508]">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/5 via-purple-900/5 to-indigo-900/5"></div>
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-4xl lg:text-5xl font-bold text-white mb-2">10k+</div>
+                <div className="text-slate-400 text-sm font-medium uppercase tracking-wider">Active Peers</div>
+              </div>
+              <div>
+                <div className="text-4xl lg:text-5xl font-bold text-white mb-2">50k</div>
+                <div className="text-slate-400 text-sm font-medium uppercase tracking-wider">Hours Learned</div>
+              </div>
+              <div>
+                <div className="text-4xl lg:text-5xl font-bold text-white mb-2">95%</div>
+                <div className="text-slate-400 text-sm font-medium uppercase tracking-wider">Match Success</div>
+              </div>
+              <div>
+                <div className="text-4xl lg:text-5xl font-bold text-white mb-2">24/7</div>
+                <div className="text-slate-400 text-sm font-medium uppercase tracking-wider">Rooms Open</div>
               </div>
             </div>
           </div>

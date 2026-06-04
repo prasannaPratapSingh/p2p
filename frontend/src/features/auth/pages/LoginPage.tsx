@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../hook/auth.hook';
 import { useNavigate, Link } from 'react-router';
@@ -10,6 +10,10 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const authError = useSelector((state: any) => state.auth.error);
+
+    useEffect(() => {
+        dispatch(setError(null));
+    }, [dispatch]);
 
     const { handleLogin } = useAuth();
 
