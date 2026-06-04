@@ -1,27 +1,51 @@
-import React, { type FormEvent, useState } from 'react';
-import { useAuth } from '../hook/auth.hook';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { useAuth } from '../hook/auth.hook';
+
+type RegisterFormValues = {
+    name: string;
+    email: string;
+    password: string;
+};
 
 const RegisterPage = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const navigate=useNavigate();
-
+    const navigate = useNavigate();
     const { handleRegister } = useAuth();
+    const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<RegisterFormValues>();
+    const [backendError, setBackendError] = useState<string | null>(null);
 
-    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        console.log('Registration attempt', { name, email, password });
+    const onSubmit = async (data: RegisterFormValues) => {
+        setBackendError(null);
 
-        const user = await handleRegister({ name, email, password });
+        try {
+            console.log('Registration attempt', data);
+            const user = await handleRegister(data) as any;
 
-        if (user?.success) {
-            navigate('/login');
+            if (user?.success) {
+                navigate('/login');
+            }
+        } catch (error: any) {
+            const backendErrors = error?.response?.data?.errors;
+
+            if (Array.isArray(backendErrors)) {
+                backendErrors.forEach((backendErrorItem: any) => {
+                    const fieldName = backendErrorItem.path?.[1] || backendErrorItem.path?.[0] || 'form';
+                    const validFieldNames = ['name', 'email', 'password'];
+                    if (validFieldNames.includes(fieldName)) {
+                        setError(fieldName, {
+                            type: 'server',
+                            message: backendErrorItem.message || 'Invalid value',
+                        });
+                    } else {
+                        setBackendError(backendErrorItem.message || 'Invalid input.');
+                    }
+                });
+                return;
+            }
+
+            setBackendError(error?.response?.data?.message || error?.message || 'Registration failed.');
         }
-
-
     };
 
     return (
@@ -48,7 +72,13 @@ const RegisterPage = () => {
                             </p>
                         </div>
 
-                        <form className="space-y-5" onSubmit={handleSubmit}>
+                        {backendError && (
+                            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                                {backendError}
+                            </div>
+                        )}
+
+                        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                             <div className="space-y-1.5">
                                 <label className="text-sm font-medium text-slate-300 block">
                                     Full Name
@@ -56,13 +86,12 @@ const RegisterPage = () => {
                                 <div className="relative group">
                                     <input
                                         type="text"
-                                        value={name}
-                                        onChange={(event) => setName(event.target.value)}
-                                        required
+                                        {...register('name', { required: 'Name is required' })}
                                         placeholder="Jane Doe"
                                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-300 group-hover:border-white/20"
                                     />
                                 </div>
+                                {errors.name && <p className="text-sm text-red-400">{errors.name.message}</p>}
                             </div>
 
                             <div className="space-y-1.5">
@@ -72,13 +101,18 @@ const RegisterPage = () => {
                                 <div className="relative group">
                                     <input
                                         type="email"
-                                        value={email}
-                                        onChange={(event) => setEmail(event.target.value)}
-                                        required
+                                        {...register('email', {
+                                            required: 'Email is required',
+                                            pattern: {
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: 'Please enter a valid email address',
+                                            },
+                                        })}
                                         placeholder="you@example.com"
                                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-300 group-hover:border-white/20"
                                     />
                                 </div>
+                                {errors.email && <p className="text-sm text-red-400">{errors.email.message}</p>}
                             </div>
 
                             <div className="space-y-1.5">
@@ -88,26 +122,32 @@ const RegisterPage = () => {
                                 <div className="relative group">
                                     <input
                                         type="password"
-                                        value={password}
-                                        onChange={(event) => setPassword(event.target.value)}
-                                        required
+                                        {...register('password', {
+                                            required: 'Password is required',
+                                            minLength: { value: 7, message: 'Password must be at least 7 characters' },
+                                        })}
                                         placeholder="••••••••"
                                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-300 group-hover:border-white/20"
                                     />
                                 </div>
+                                {errors.password && <p className="text-sm text-red-400">{errors.password.message}</p>}
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-4 py-3 mt-4 transition-all duration-300 transform hover:-translate-y-0.5 shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] active:translate-y-0"
+                                disabled={isSubmitting}
+                                className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-4 py-3 mt-4 transition-all duration-300 transform hover:-translate-y-0.5 shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] active:translate-y-0 disabled:cursor-not-allowed disabled:bg-indigo-400"
                             >
-                                Sign Up
+                                {isSubmitting && (
+                                    <span className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                )}
+                                {isSubmitting ? 'Signing up...' : 'Sign Up'}
                             </button>
                         </form>
 
                         <div className="text-center text-sm text-slate-400 mt-8">
                             Already have an account?{' '}
-                            <a href="#" className="text-white font-semibold hover:text-indigo-400 transition-colors">
+                            <a href="/login" className="text-white font-semibold hover:text-indigo-400 transition-colors">
                                 Sign in
                             </a>
                         </div>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router';
+import GlobalLoader from '../../shared/components/GlobalLoader';
 
 const Protected = ({ children }: React.PropsWithChildren) => {
 
@@ -8,21 +9,14 @@ const Protected = ({ children }: React.PropsWithChildren) => {
     const loading = useSelector((state: any) => state.auth.loading);
 
     if (loading) {
-        return (
-            <h1>Loading...</h1>
-        )
+        return <GlobalLoader fullScreen />
     }
 
     if (!user) {
-        return (
-            <Navigate to={'/login'} />
-        )
+        return <Navigate to={'/login'} />
     }
 
-
-    return (
-        children
-    )
+    return children;
 }
 
 export default Protected

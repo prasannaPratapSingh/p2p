@@ -9,40 +9,29 @@ export const useAuth = () => {
 
     const handleRegister = async ({ name, email, password }: registerBody) => {
         try {
-
             dispatch(setLoading(true));
 
             const data = await register({ name, email, password });
-
             dispatch(setUser(data));
-            
-
             return data;
-
         } catch (error: any) {
-            dispatch(setError(error));
-        }
-        finally {
+            dispatch(setError(error?.response?.data?.message || error?.message || 'Registration failed'));
+            throw error;
+        } finally {
             dispatch(setLoading(false));
         }
     }
 
     const handleLogin = async ({ email, password }: loginBody) => {
-
-
         try {
-
             dispatch(setLoading(true));
-
             const data = await login({ email, password });
-            dispatch(setUser(data))
-
+            dispatch(setUser(data));
             return data;
-
         } catch (error: any) {
-            dispatch(setError(error))
-        }
-        finally {
+            dispatch(setError(error?.response?.data?.message || error?.message || 'Login failed'));
+            throw error;
+        } finally {
             dispatch(setLoading(false));
         }
     }
@@ -50,14 +39,13 @@ export const useAuth = () => {
     const handleLogout = async () => {
         try {
             dispatch(setLoading(true));
-            const data = await logout();
-            dispatch(setUser(data))
-            return data;
+            await logout();
+            dispatch(setUser(null));
+            return null;
         } catch (error: any) {
-            dispatch(setError(error));
-        }
-        finally {
-            dispatch(setLoading(false))
+            dispatch(setError(error?.response?.data?.message || error?.message || 'Logout failed'));
+        } finally {
+            dispatch(setLoading(false));
         }
     }
 
@@ -65,12 +53,16 @@ export const useAuth = () => {
         try {
             dispatch(setLoading(true));
             const data = await getMeUuser();
-            dispatch(setUser(data))
+            dispatch(setUser(data));
             return data;
         } catch (error: any) {
-            dispatch(setError(error));
-        }
-        finally {
+            const message = error?.response?.data?.message || error?.message || 'Failed to fetch user';
+            if (error?.response?.status === 401) {
+                dispatch(setError(null));
+            } else {
+                dispatch(setError(message));
+            }
+        } finally {
             dispatch(setLoading(false));
         }
     }

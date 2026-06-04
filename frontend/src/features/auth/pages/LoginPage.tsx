@@ -1,25 +1,32 @@
-import React, { type FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../hook/auth.hook';
 import { useNavigate } from 'react-router';
+import { setError } from '../state/auth.slice';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigate=useNavigate();
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const authError = useSelector((state: any) => state.auth.error);
 
     const { handleLogin } = useAuth();
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        dispatch(setError(null));
         console.log('Login attempt', { email, password });
 
-        const user = await handleLogin({ email, password });
+        try {
+            const user = await handleLogin({ email, password }) as any;
+            console.log(user);
 
-        console.log(user);
-
-        if (user?.success) {
-            navigate('/');
+            if (user?.success) {
+                navigate('/dashboard');
+            }
+        } catch (_error: any) {
+            // Error is already stored in Redux via useAuth
         }
     };
 
@@ -27,10 +34,10 @@ const LoginPage = () => {
         <div className="min-h-screen bg-[#0a0a0a] text-slate-50 relative overflow-hidden flex items-center justify-center font-sans">
             {/* Animated Background Elements */}
             <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600/30 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-120 h-120 bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen"></div>
             <div className="absolute top-[40%] left-[20%] w-72 h-72 bg-pink-500/20 rounded-full blur-[100px] mix-blend-screen"></div>
 
-            <div className="mx-auto flex w-full max-w-6xl flex-col lg:flex-row rounded-[2.5rem] overflow-hidden bg-white/[0.02] border border-white/10 shadow-2xl backdrop-blur-2xl relative z-10">
+            <div className="mx-auto flex w-full max-w-6xl flex-col lg:flex-row rounded-[2.5rem] overflow-hidden bg-white/2 border border-white/10 shadow-2xl backdrop-blur-2xl relative z-10">
 
                 {/* Left Section - Form */}
                 <div className="flex-1 p-10 lg:p-16 flex flex-col justify-center relative">
@@ -46,6 +53,12 @@ const LoginPage = () => {
                                 Enter your credentials to access your skill network.
                             </p>
                         </div>
+
+                        {authError && (
+                            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                                {authError}
+                            </div>
+                        )}
 
                         <form className="space-y-5" onSubmit={handleSubmit}>
                             <div className="space-y-1.5">
@@ -65,7 +78,7 @@ const LoginPage = () => {
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-slate-300 block flex justify-between">
+                                <label className="text-sm font-medium text-slate-300 flex items-center justify-between">
                                     Password
                                     <a href="#" className="text-indigo-400 hover:text-indigo-300 text-xs font-medium transition-colors">Forgot?</a>
                                 </label>
@@ -91,7 +104,7 @@ const LoginPage = () => {
 
                         <div className="text-center text-sm text-slate-400 mt-8">
                             Don't have an account?{' '}
-                            <a href="#" className="text-white font-semibold hover:text-indigo-400 transition-colors">
+                            <a href="/register" className="text-white font-semibold hover:text-indigo-400 transition-colors">
                                 Create one
                             </a>
                         </div>
@@ -100,7 +113,7 @@ const LoginPage = () => {
 
                 {/* Right Section - Image/Visuals */}
                 <div className="hidden lg:flex flex-1 relative bg-indigo-900/20 overflow-hidden items-center justify-center p-12">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 z-0"></div>
+                    <div className="absolute inset-0 bg-linear-to-br from-indigo-500/20 to-purple-600/20 z-0"></div>
                     <img
                         src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80"
                         alt="Collaboration"
