@@ -8,7 +8,6 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const heroTextRef = useRef<HTMLDivElement>(null);
   const heroImageRef = useRef<HTMLDivElement>(null);
-
   useGSAP(() => {
     gsap.from(heroTextRef.current, {
       y: 30,
@@ -25,6 +24,33 @@ const LandingPage = () => {
       delay: 0.8,
       ease: "power3.out"
     });
+
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!heroImageRef.current) return;
+      const card = heroImageRef.current;
+      const rect = card.getBoundingClientRect();
+      const cardCenterX = rect.left + rect.width / 2;
+      const cardCenterY = rect.top + rect.height / 2;
+      const deltaX = e.clientX - cardCenterX;
+      const deltaY = e.clientY - cardCenterY;
+      const maxDistanceX = window.innerWidth / 2;
+      const maxDistanceY = window.innerHeight / 2;
+      const rotateX = (deltaY / maxDistanceY) * -15;
+      const rotateY = (deltaX / maxDistanceX) * 15;
+
+      gsap.to(card, {
+        rotateX: rotateX,
+        rotateY: rotateY,
+        transformPerspective: 1000,
+        ease: "power2.out",
+        duration: 0.5
+      });
+    };
+
+    window.addEventListener("mousemove", handleGlobalMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleGlobalMouseMove);
+    };
   }, []);
 
   return (
@@ -64,8 +90,8 @@ const LandingPage = () => {
             </div>
 
             {/* Right side card/image */}
-            <div ref={heroImageRef} className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto">
-              <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl aspect-square sm:aspect-[5/4] lg:aspect-square">
+            <div ref={heroImageRef} className="relative w-full max-w-lg mx-auto border-2 border-white/70 rounded-[2.5rem] p-2 border-dashed  lg:mx-0 lg:ml-auto " style={{ transformStyle: "preserve-3d" }}>
+              <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl aspect-square sm:aspect-[5/4] lg:aspect-square">
                 <div className="absolute inset-0  z-10 mix-blend-overlay"></div>
                 <img
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"

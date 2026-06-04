@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { completeConnectionSwap, respondToConnectionRequest, sendConnectionRequest, getMyConnections, cancelConnection } from "./connecions.controller.js";
+import { completeConnectionSwap, respondToConnectionRequest, sendConnectionRequest, getMyConnections, getAllConnections, cancelConnection } from "./connecions.controller.js";
 import authenticateToken from "../auth/auth.middleware.js";
 
 const router = Router();
@@ -32,6 +32,12 @@ router.post('/complete', authenticateToken, completeConnectionSwap);
  */
 router.get('/me', authenticateToken, getMyConnections);
 
+/**
+ * GET /api/connection/all
+ * Params: none
+ * Auth: required
+ */
+router.get('/all', authenticateToken, getAllConnections);
 
 router.post('/cancel', authenticateToken, cancelConnection);
 
