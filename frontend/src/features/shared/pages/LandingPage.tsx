@@ -4,113 +4,206 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-slate-950/70" />
-        <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-12 lg:px-10">
-          <header className="mb-12 max-w-3xl">
-            <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900/70 px-4 py-1 text-sm text-cyan-300">
-              Peer2Peer — Connect, Learn, Grow
-            </span>
-            <h1 className="mt-8 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Build real skills with trusted peers.
-            </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-              Share knowledge, find collaborators, and grow your network in a modern skill-sharing community built for ambitious learners.
-            </p>
-          </header>
+    <div className="min-h-screen bg-[#0a0a0a] text-slate-50 relative overflow-hidden font-sans">
+      {/* Animated Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen pointer-events-none"></div>
+      <div className="absolute top-[40%] left-[30%] w-[30rem] h-[30rem] bg-pink-500/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none"></div>
 
-          <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
-                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Peer discovery</p>
-                  <h2 className="mt-3 text-2xl font-semibold text-white">Find collaborators instantly</h2>
-                  <p className="mt-2 text-slate-400">Browse profiles, compare strengths, and connect with people who match your goals.</p>
-                </div>
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
-                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Skill swap</p>
-                  <h2 className="mt-3 text-2xl font-semibold text-white">Trade expertise</h2>
-                  <p className="mt-2 text-slate-400">Offer what you know, learn what you need, and grow together through meaningful exchanges.</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                <button
-                  type="button"
-                  onClick={() => navigate('/register')}
-                  className="inline-flex items-center justify-center rounded-full bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/60"
-                >
-                  Get Started
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/login')}
-                  className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/90 px-6 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-500 hover:text-white"
-                >
-                  Sign In
-                </button>
-              </div>
+      {/* Navigation */}
+      <nav className="relative z-10 border-b border-white/5 bg-black/20 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
-
-            <div className="rounded-4xl border border-slate-800 bg-slate-900/70 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur-xl">
-              <div className="space-y-6">
-                <div className="rounded-3xl bg-slate-950/80 p-6 ring-1 ring-slate-800">
-                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Featured insight</p>
-                  <h2 className="mt-4 text-3xl font-semibold text-white">Your next mentor is a conversation away.</h2>
-                  <p className="mt-4 text-slate-400">Join a network of learners and experts where skill-building is fast, friendly, and focused on real outcomes.</p>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-5">
-                    <p className="text-sm text-slate-400">Verified peer profiles</p>
-                    <p className="mt-3 text-xl font-semibold text-white">12k+</p>
-                  </div>
-                  <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-5">
-                    <p className="text-sm text-slate-400">Sessions scheduled</p>
-                    <p className="mt-3 text-xl font-semibold text-white">4.7k</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <span className="text-xl font-bold tracking-tight text-white">Peer2Peer</span>
           </div>
-        </div>
-      </section>
-
-      <section className="border-t border-slate-800 bg-slate-950/90 py-16">
-        <div className="mx-auto max-w-6xl space-y-10 px-6 lg:px-10">
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="rounded-3xl bg-slate-900/80 p-8 shadow-lg shadow-slate-950/20">
-              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Community</p>
-              <h3 className="mt-4 text-xl font-semibold text-white">Designed for growth</h3>
-              <p className="mt-3 text-slate-400">Peer2Peer makes it easy to build trust, exchange skills, and stay motivated with a supportive community.</p>
-            </div>
-            <div className="rounded-3xl bg-slate-900/80 p-8 shadow-lg shadow-slate-950/20">
-              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Focus</p>
-              <h3 className="mt-4 text-xl font-semibold text-white">Quality connections</h3>
-              <p className="mt-3 text-slate-400">Match with peers who care about the same topics and are ready to learn together.</p>
-            </div>
-            <div className="rounded-3xl bg-slate-900/80 p-8 shadow-lg shadow-slate-950/20">
-              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Momentum</p>
-              <h3 className="mt-4 text-xl font-semibold text-white">Built to move fast</h3>
-              <p className="mt-3 text-slate-400">Quick onboarding, easy skill swaps, and a streamlined experience for busy professionals.</p>
-            </div>
-          </div>
-
-          <div className="rounded-4xl border border-slate-800 bg-slate-900/80 p-10 text-center shadow-2xl shadow-slate-950/30 backdrop-blur-xl">
-            <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Ready to join?</p>
-            <h2 className="mt-4 text-3xl font-semibold text-white">Start your peer-to-peer journey today</h2>
-            <p className="mx-auto mt-4 max-w-2xl text-slate-400">Whether you want to teach, learn, or collaborate, Peer2Peer gives you the tools to grow faster with real people.</p>
+          <div className="flex items-center gap-4">
             <button
-              type="button"
-              onClick={() => navigate('/register')}
-              className="mt-8 inline-flex rounded-full bg-cyan-500 px-8 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+              onClick={() => navigate('/login')}
+              className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
             >
-              Create your free account
+              Sign In
+            </button>
+            <button
+              onClick={() => navigate('/register')}
+              className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)]"
+            >
+              Get Started
             </button>
           </div>
         </div>
-      </section>
-    </main>
+      </nav>
+
+      <main className="relative z-10">
+        {/* Hero Section */}
+        <section className="px-6 pt-12 pb-20 lg:pt-20 lg:pb-32 max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            {/* Left side text */}
+            <div className="max-w-2xl text-left mx-auto">
+              <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-widest uppercase mb-6">
+                The Ultimate Skill Network
+              </span>
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
+                Master skills with <br className="hidden lg:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">trusted peers.</span>
+              </h1>
+              <p className="text-lg text-slate-400 mb-10 max-w-xl leading-relaxed">
+                Join a modern community of ambitious learners. Share knowledge, find collaborators, and accelerate your growth through meaningful peer-to-peer exchanges.
+              </p>
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <button
+                  onClick={() => navigate('/register')}
+                  className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-2xl transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)]"
+                >
+                  Start Learning For Free
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 backdrop-blur-md"
+                >
+                  Explore the Network
+                </button>
+              </div>
+            </div>
+
+            {/* Right side card/image */}
+            <div className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto">
+              <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl aspect-square sm:aspect-[5/4] lg:aspect-square">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 z-10 mix-blend-overlay"></div>
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
+                  alt="Students collaborating"
+                  className="absolute inset-0 w-full h-full object-cover opacity-60"
+                />
+                
+                {/* Floating elements over image */}
+                <div className="absolute bottom-6 left-6 right-6 z-20">
+                  <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-5 transform hover:scale-[1.02] transition-transform duration-500 shadow-2xl">
+                    <div className="flex items-center gap-3 mb-2 sm:mb-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" alt="Avatar" className="w-full h-full rounded-full object-cover border-2 border-black" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-semibold text-sm">Sneha Verma</h4>
+                        <p className="text-indigo-300 text-xs font-medium">Senior Developer</p>
+                      </div>
+                    </div>
+                    <p className="text-slate-300 text-sm leading-relaxed hidden sm:block">
+                      "I learned more about system design in 3 weeks pairing with mentors here than I did in 6 months alone."
+                    </p>
+                  </div>
+                </div>
+
+                <div className="absolute top-6 right-6 z-20">
+                   <div className="bg-indigo-600/90 backdrop-blur-md text-white text-xs font-bold px-4 py-2 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.5)]">
+                     Online Now
+                   </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="px-6 py-24 bg-[#050508] border-y border-white/5 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            
+            <div className="text-center mb-16">
+               <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Everything you need to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">succeed</span></h2>
+               <p className="text-slate-400 max-w-2xl mx-auto text-lg">A suite of powerful tools designed to make peer-to-peer learning as seamless and effective as possible.</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+              {/* Feature 1 */}
+              <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="relative w-12 h-12 mb-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(79,70,229,0.3)] transition-all duration-500">
+                  <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <h3 className="relative text-xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors duration-300">Discover Peers</h3>
+                <p className="relative text-slate-400 leading-relaxed text-sm md:text-base">
+                  Browse verified profiles and instantly match with people whose goals and expertise complement yours. Skip the noise and find the right mentor or mentee.
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="relative w-12 h-12 mb-6 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.3)] transition-all duration-500">
+                  <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                </div>
+                <h3 className="relative text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors duration-300">Skill Exchange</h3>
+                <p className="relative text-slate-400 leading-relaxed text-sm md:text-base">
+                  Trade what you know for what you need. Learn faster through reciprocal teaching, code reviews, and hands-on practice sessions tailored for you.
+                </p>
+              </div>
+
+              {/* Feature 3 (New: 1:1 Meeting Room with Jitsi) */}
+              <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="relative w-12 h-12 mb-6 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-500">
+                  <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="relative text-xl font-bold text-white mb-3 group-hover:text-blue-300 transition-colors duration-300">1:1 Meeting Rooms</h3>
+                <p className="relative text-slate-400 leading-relaxed text-sm md:text-base">
+                  Jump straight into a personal, isolated virtual room powered by Jitsi, designed specifically for learning and growing. Complete with screen sharing and clear audio.
+                </p>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-pink-500/30 transition-all duration-500 overflow-hidden shadow-2xl backdrop-blur-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <div className="relative w-12 h-12 mb-6 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center transform group-hover:-translate-y-2 group-hover:shadow-[0_0_25px_rgba(236,72,153,0.3)] transition-all duration-500">
+                  <svg className="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="relative text-xl font-bold text-white mb-3 group-hover:text-pink-300 transition-colors duration-300">Accelerate Growth</h3>
+                <p className="relative text-slate-400 leading-relaxed text-sm md:text-base">
+                  Stay motivated with a supportive community. Track your progress, earn endorsements, and build a portfolio as you master new disciplines.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="px-6 py-20 lg:py-24 max-w-4xl mx-auto text-center">
+          <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-10 lg:p-16 relative overflow-hidden">
+            <div className="relative z-10">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-5">Ready to level up?</h2>
+              <p className="text-slate-400 mb-8 max-w-lg mx-auto text-sm md:text-base">
+                Join thousands of ambitious individuals who are already transforming their careers through peer-to-peer learning.
+              </p>
+              <button
+                onClick={() => navigate('/register')}
+                className="px-8 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors duration-300 shadow-lg shadow-indigo-500/20"
+              >
+                Create Your Free Account
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+      
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-white/5 bg-black/40 py-10">
+        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-slate-500">
+          © {new Date().getFullYear()} Peer2Peer Network. All rights reserved.
+        </div>
+      </footer>
+    </div>
   );
 };
 

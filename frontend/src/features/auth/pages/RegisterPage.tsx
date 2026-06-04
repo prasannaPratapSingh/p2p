@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hook/auth.hook';
 
@@ -59,7 +59,13 @@ const RegisterPage = () => {
 
                 {/* Form Section */}
                 <div className="flex-1 p-10 lg:p-16 flex flex-col justify-center relative">
-                    <div className="max-w-md mx-auto w-full space-y-8">
+                    <Link to="/" className="absolute top-6 left-6 lg:top-10 lg:left-10 flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 transition-colors group">
+                        <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Home
+                    </Link>
+                    <div className="max-w-md mx-auto w-full space-y-8 mt-4 lg:mt-0">
                         <div>
                             <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-widest uppercase mb-6">
                                 Join the Network
@@ -147,9 +153,9 @@ const RegisterPage = () => {
 
                         <div className="text-center text-sm text-slate-400 mt-8">
                             Already have an account?{' '}
-                            <a href="/login" className="text-white font-semibold hover:text-indigo-400 transition-colors">
+                            <Link to="/login" className="text-white font-semibold hover:text-indigo-400 transition-colors">
                                 Sign in
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

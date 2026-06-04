@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../hook/auth.hook';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { setError } from '../state/auth.slice';
 
 const LoginPage = () => {
@@ -41,7 +41,13 @@ const LoginPage = () => {
 
                 {/* Left Section - Form */}
                 <div className="flex-1 p-10 lg:p-16 flex flex-col justify-center relative">
-                    <div className="max-w-md mx-auto w-full space-y-8">
+                    <Link to="/" className="absolute top-6 left-6 lg:top-10 lg:left-10 flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-400 transition-colors group">
+                        <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Home
+                    </Link>
+                    <div className="max-w-md mx-auto w-full space-y-8 mt-4 lg:mt-0">
                         <div>
                             <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-widest uppercase mb-6">
                                 Peer2Peer Hub
@@ -80,7 +86,7 @@ const LoginPage = () => {
                             <div className="space-y-1.5">
                                 <label className="text-sm font-medium text-slate-300 flex items-center justify-between">
                                     Password
-                                    <a href="#" className="text-indigo-400 hover:text-indigo-300 text-xs font-medium transition-colors">Forgot?</a>
+                                    <Link to="#" className="text-indigo-400 hover:text-indigo-300 text-xs font-medium transition-colors">Forgot?</Link>
                                 </label>
                                 <div className="relative group">
                                     <input
@@ -104,9 +110,9 @@ const LoginPage = () => {
 
                         <div className="text-center text-sm text-slate-400 mt-8">
                             Don't have an account?{' '}
-                            <a href="/register" className="text-white font-semibold hover:text-indigo-400 transition-colors">
+                            <Link to="/register" className="text-white font-semibold hover:text-indigo-400 transition-colors">
                                 Create one
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
