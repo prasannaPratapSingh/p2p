@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 import errorHandler from './middlewares/errorHandler.js';
 import asyncHandler from './utils/asyncHandler.js';
@@ -16,6 +17,11 @@ import connectionRouter from './modules/connections/connections.routes.js';
 import profileRouter from './modules/profile/profile.routes.js';
 
 const app = express();
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 app.use(express.json());
 

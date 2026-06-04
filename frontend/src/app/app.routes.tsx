@@ -1,22 +1,44 @@
 import { createBrowserRouter } from "react-router";
 import AppLayout from "./AppLayout";
+import LandingPage from "../features/shared/pages/LandingPage";
+import DashboardPage from "../features/shared/pages/DashboardPage";
+import LoginPage from "../features/auth/pages/LoginPage";
+import RegisterPage from "../features/auth/pages/RegisterPage";
+import Protected from "../features/auth/components/Protected";
+import PublicRoute from "../features/auth/components/PublicRoute";
 
-export const routes=createBrowserRouter([
+export const routes = createBrowserRouter([
     {
-        path:"/login",
-        element:<h1>Welcome to loginPage</h1>
+        path: "/",
+        element: <LandingPage />
     },
     {
-        path:"/register",
-        element:<h1>Welcome to registerPage</h1>
+        path: "/login",
+        element: (
+            <PublicRoute>
+                <LoginPage />
+            </PublicRoute>
+        )
     },
     {
-        element:<AppLayout/>,
-        children:[
+        path: "/register",
+        element: (
+            <PublicRoute>
+                <RegisterPage />
+            </PublicRoute>
+        )
+    },
+    {
+        element: <AppLayout />,
+        children: [
             {
-                path:'/',
-                element:<h1>Welcome to the homePage</h1>
+                path: "/dashboard",
+                element: (
+                    <Protected>
+                        <DashboardPage />
+                    </Protected>
+                )
             }
         ]
     }
-])
+]);

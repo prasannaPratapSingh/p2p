@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { validateRequest } from "../../middlewares/validateRequest.middleware.js";
 import { loginSchema, registerSchema } from "./auth.validation.js";
-import { login, logout, refreshToken, register } from "./auth.controller.js";
+import { getMe, login, logout, refreshToken, register } from "./auth.controller.js";
 import { strictAuthLimiter } from "../../middlewares/rateLimiter.middleware.js";
+import authenticateToken from "./auth.middleware.js";
 
 const router = Router();
 
@@ -29,6 +30,8 @@ router.post('/refresh', refreshToken);
  * Cookies: refreshToken
  */
 router.post('/logout', logout);
+
+router.get('/get-me', authenticateToken, getMe);
 
 export default router;
 

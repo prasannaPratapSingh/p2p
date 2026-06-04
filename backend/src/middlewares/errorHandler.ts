@@ -18,6 +18,7 @@ const errorHandler = (
             statusCode: err.statusCode,
             message: err.message,
             code: err.code,
+            errorCode: err.code,
             errors: err.errors,
             stack:
                 process.env.NODE_ENV ===
