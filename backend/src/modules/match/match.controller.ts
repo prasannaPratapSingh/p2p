@@ -30,7 +30,7 @@ export const getDashboardMatches = asyncHandler(async (
             skillsToLearn: { $in: myProfile.skillsToTeach },
             skillsToTeach: { $in: myProfile.skillsToLearn }
         })
-            .populate("userId", "name email")
+            .populate("userId", "name email avatarUrl")
             .sort({ lastActiveAt: -1 })
 
 
