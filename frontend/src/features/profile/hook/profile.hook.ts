@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setError, setLoading, setProfile } from '../state/profile.slice';
-import { getProfile, updateSkills, uploadAvatar } from '../service/profileService';
+import { setError, setLoading, setProfile, setMatches, setLoadingMatches, setMatchesError, setView } from '../state/profile.slice';
+import { getProfile, updateSkills, uploadAvatar, getMatches } from '../service/profileService';
 import type { RootState } from '../../../app/store/app.store';
 
 export const useProfile = () => {
@@ -8,6 +8,10 @@ export const useProfile = () => {
     const profile = useSelector((state: RootState) => state.profile.profile);
     const loading = useSelector((state: RootState) => state.profile.loading);
     const error = useSelector((state: RootState) => state.profile.error);
+    const matches = useSelector((state: RootState) => state.profile.matches);
+    const loadingMatches = useSelector((state: RootState) => state.profile.loadingMatches);
+    const matchesError = useSelector((state: RootState) => state.profile.matchesError);
+    const view = useSelector((state: RootState) => state.profile.view);
 
     const fetchProfile = async () => {
         try {
@@ -55,5 +59,37 @@ export const useProfile = () => {
         }
     };
 
-    return { profile, loading, error, fetchProfile, handleUpdateSkills, handleUploadAvatar };
+    const fetchMatches = async () => {
+        try {
+            dispatch(setLoadingMatches(true));
+            dispatch(setMatchesError(null));
+            const data = await getMatches();
+            dispatch(setMatches(data));
+            return data;
+        } catch (error: any) {
+            dispatch(setMatchesError(error?.response?.data?.message || error?.message || 'Failed to fetch matches'));
+            throw error;
+        } finally {
+            dispatch(setLoadingMatches(false));
+        }
+    };
+
+    const handleSetView = (newView: 'profile' | 'matches') => {
+        dispatch(setView(newView));
+    };
+
+    return {
+        profile,
+        loading,
+        error,
+        matches,
+        loadingMatches,
+        matchesError,
+        view,
+        fetchProfile,
+        handleUpdateSkills,
+        handleUploadAvatar,
+        fetchMatches,
+        handleSetView
+    };
 };

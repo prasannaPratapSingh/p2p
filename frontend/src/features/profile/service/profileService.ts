@@ -36,3 +36,13 @@ export const uploadAvatar = async (file: File): Promise<any> => {
         throw error;
     }
 };
+
+export const getMatches = async (): Promise<any> => {
+    try {
+        const response = await axiosInstance.get('/match/dashboard');
+        return response.data.data;
+    } catch (error: any) {
+        console.error('Error fetching matches', error.message);
+        throw error;
+    }
+};

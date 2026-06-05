@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../auth/hook/auth.hook";
+import { useProfile } from "../../profile/hook/profile.hook";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { handleLogout } = useAuth();
+  const { handleSetView } = useProfile();
   const auth = useSelector((state: any) => state.auth);
   const user = auth?.user;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -49,61 +51,74 @@ const Navbar = () => {
         </button>
 
         {user ? (
-          <div className="flex items-center gap-2" ref={dropdownRef}>
-            {/* Static Avatar Image */}
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-[#1a2030] flex items-center justify-center shrink-0">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-slate-800 flex items-center justify-center text-sm font-bold text-slate-100">
-                  {displayName.charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => {
+                handleSetView('matches');
+                navigate('/dashboard');
+              }}
+              className="text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition hover:cursor-pointer bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 px-3.5 py-1.5 rounded-full"
+            >
+              Find My Peer
+            </button>
+            <div className="flex items-center gap-2" ref={dropdownRef}>
+              {/* Static Avatar Image */}
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-[#1a2030] flex items-center justify-center shrink-0">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-slate-800 flex items-center justify-center text-sm font-bold text-slate-100">
+                    {displayName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
 
-            {/* Separate Dropdown Trigger Button */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 select-none hover:cursor-pointer focus:outline-none"
-              >
-                <svg
-                  className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+              {/* Separate Dropdown Trigger Button */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 select-none hover:cursor-pointer focus:outline-none"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+                  <svg
+                    className={`w-5 h-5 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-              {/* Dropdown Menu */}
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-xl border border-white/10 bg-[#0d0d0d] p-1.5 shadow-xl ring-1 ring-black/50 focus:outline-none z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      navigate('/dashboard');
-                    }}
-                    className="flex w-full items-center px-4 py-2.5 text-sm font-medium text-slate-300 rounded-lg hover:bg-white/5 hover:text-white transition duration-200 hover:cursor-pointer"
-                  >
-                    Dashboard
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      handleSignOut();
-                    }}
-                    className="flex w-full items-center px-4 py-2.5 text-sm font-medium text-rose-400 rounded-lg hover:bg-rose-500/10 hover:text-rose-300 transition duration-200 hover:cursor-pointer"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-xl border border-white/10 bg-[#0d0d0d] p-1.5 shadow-xl ring-1 ring-black/50 focus:outline-none z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleSetView('profile');
+                        navigate('/dashboard');
+                      }}
+                      className="flex w-full items-center px-4 py-2.5 text-sm font-medium text-slate-300 rounded-lg hover:bg-white/5 hover:text-white transition duration-200 hover:cursor-pointer"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleSignOut();
+                      }}
+                      className="flex w-full items-center px-4 py-2.5 text-sm font-medium text-rose-400 rounded-lg hover:bg-rose-500/10 hover:text-rose-300 transition duration-200 hover:cursor-pointer"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ) : (

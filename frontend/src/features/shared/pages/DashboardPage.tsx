@@ -2,7 +2,21 @@ import { useEffect, useState, useRef } from 'react';
 import { useProfile } from '../../profile/hook/profile.hook';
 
 const DashboardPage = () => {
-  const { profile, loading, error, fetchProfile, handleUpdateSkills, handleUploadAvatar } = useProfile();
+  const {
+    profile,
+    loading,
+    error,
+    matches,
+    loadingMatches,
+    matchesError,
+    view,
+    fetchProfile,
+    handleUpdateSkills,
+    handleUploadAvatar,
+    fetchMatches,
+    handleSetView
+  } = useProfile();
+
   const skillData = profile?.userSkillData;
 
   // Modals and form state
@@ -22,6 +36,12 @@ const DashboardPage = () => {
       void fetchProfile();
     }
   }, [fetchProfile, loading, profile]);
+
+  useEffect(() => {
+    if (view === 'matches') {
+      void fetchMatches();
+    }
+  }, [view]);
 
   // Sync modal state when profile changes or modal opens
   useEffect(() => {
@@ -175,6 +195,15 @@ const DashboardPage = () => {
                 {isUploading ? 'Uploading...' : 'Update Avatar'}
               </button>
 
+              {/* Find My Peer Button */}
+              <button
+                type="button"
+                onClick={() => handleSetView('matches')}
+                className="mt-3 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold uppercase tracking-wider rounded-xl transition duration-200 text-white shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 hover:cursor-pointer"
+              >
+                Find My Peer
+              </button>
+
               {/* Get All My Meetings Button */}
               <button
                 type="button"
@@ -213,122 +242,285 @@ const DashboardPage = () => {
 
             {/* Right Section - 70% width */}
             <div className="lg:col-span-7 space-y-8">
-              
-              {/* Header card with Action */}
-              <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xl">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                    Workspace Dashboard
-                  </h1>
-                  <p className="text-slate-400 text-sm mt-1 font-medium">
-                    Configure your expertise, match settings, and view system stats.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsSkillsModalOpen(true)}
-                  className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 px-5 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-[0.98] hover:cursor-pointer"
-                >
-                  Update Skills
-                </button>
-              </div>
+              {view === 'matches' ? (
+                <>
+                  {/* Matches View Header */}
+                  <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xl">
+                    <div>
+                      <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        Compatible Peers
+                      </h1>
+                      <p className="text-slate-400 text-sm mt-1 font-medium">
+                        Peers matching your learning goals and teaching skills.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSetView('profile')}
+                      className="inline-flex items-center justify-center bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 hover:text-white font-semibold text-sm py-2.5 px-5 rounded-xl transition duration-200 hover:cursor-pointer"
+                    >
+                      &larr; Back to Profile
+                    </button>
+                  </div>
 
-              {/* Section 1: Basic Information */}
-              <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 sm:p-8 shadow-xl">
-                <h3 className="text-lg font-bold text-white tracking-wide border-b border-white/[0.06] pb-4">
-                  Basic Information
-                </h3>
-                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Full Name</label>
-                    <p className="mt-1 text-slate-200 font-medium text-base">{profile.name}</p>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Email Address</label>
-                    <p className="mt-1 text-slate-200 font-medium text-base">{profile.email}</p>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Member Since</label>
-                    <p className="mt-1 text-slate-200 font-medium text-base">
-                      {profile.createdAt ? new Date(profile.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                  {/* Loading/Error states for Matches */}
+                  {loadingMatches ? (
+                    <div className="flex flex-col items-center justify-center py-20 bg-[#0d111c] border border-white/[0.06] rounded-3xl shadow-xl">
+                      <div className="relative w-12 h-12">
+                        <div className="absolute inset-0 rounded-full border-4 border-slate-800"></div>
+                        <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+                      </div>
+                      <p className="mt-4 text-slate-400 font-medium">Searching for matches...</p>
+                    </div>
+                  ) : matchesError ? (
+                    <div className="rounded-3xl border border-rose-500/20 bg-rose-500/10 p-6 text-rose-300 shadow-xl">
+                      {matchesError}
+                    </div>
+                  ) : matches && matches.length === 0 ? (
+                    <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-10 text-center shadow-xl space-y-4">
+                      <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto text-2xl text-slate-400">
+                        🔍
+                      </div>
+                      <h3 className="text-lg font-bold text-white">No matches found yet</h3>
+                      <p className="text-slate-400 text-sm max-w-md mx-auto">
+                        Make sure you have added both your "skills to teach" and "skills to learn" in your profile, so the match engine can pair you with peers.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsSkillsModalOpen(true)}
+                        className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 px-5 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-[0.98] hover:cursor-pointer"
+                      >
+                        Update Skills
+                      </button>
+                    </div>
+                  ) : matches ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {matches.map((peer: any) => {
+                        const peerUser = peer.userId || {};
+                        const peerName = peerUser.name || 'Member';
+                        const peerInitials = peerName.charAt(0).toUpperCase();
 
-              {/* Section 2: Skills & Performance */}
-              <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 sm:p-8 shadow-xl space-y-8">
-                <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
-                  <h3 className="text-lg font-bold text-white tracking-wide">
-                    Skills & Activity
-                  </h3>
-                </div>
-
-                {/* Skill Stats Mini Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-[#141a29] border border-white/[0.04] p-5 rounded-2xl">
-                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">Activity Score</span>
-                    <p className="mt-2 text-2xl font-black text-white">{skillData?.activityScore ?? 0}</p>
-                  </div>
-                  <div className="bg-[#141a29] border border-white/[0.04] p-5 rounded-2xl">
-                    <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">System Rating</span>
-                    <p className="mt-2 text-2xl font-black text-white">{skillData?.rating ? Number(skillData.rating).toFixed(1) : '0.0'}</p>
-                  </div>
-                  <div className="bg-[#141a29] border border-white/[0.04] p-5 rounded-2xl">
-                    <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block">Total Sessions</span>
-                    <p className="mt-2 text-2xl font-black text-white">{skillData?.totalSessionsCompleted ?? 0}</p>
-                  </div>
-                </div>
-
-                {/* Skills tags lists */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Skills to Teach */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Skills to Teach
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {skillData?.skillsToTeach && skillData.skillsToTeach.length > 0 ? (
-                        skillData.skillsToTeach.map((skill) => (
-                          <span
-                            key={skill}
-                            className="text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full"
+                        return (
+                          <div
+                            key={peer._id}
+                            className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-white/[0.12] transition duration-200 relative overflow-hidden group"
                           >
-                            {skill}
-                          </span>
-                        ))
-                      ) : (
-                        <p className="text-sm text-slate-500 italic">No skills listed yet.</p>
-                      )}
+                            <div className="space-y-5">
+                              {/* Peer Header */}
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 bg-[#1a2030] flex items-center justify-center shrink-0">
+                                  {peerUser.avatarUrl ? (
+                                    <img
+                                      src={peerUser.avatarUrl}
+                                      alt={peerName}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <span className="text-lg font-bold text-indigo-300">
+                                      {peerInitials}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <h4 className="text-base font-bold text-white truncate leading-snug">
+                                    {peerName}
+                                  </h4>
+                                  <p className="text-xs text-slate-400 truncate mt-0.5">
+                                    {peerUser.email}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Peer Stats */}
+                              <div className="grid grid-cols-3 gap-2 py-2 border-y border-white/[0.04] text-center">
+                                <div>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Rating</span>
+                                  <span className="text-xs font-bold text-white mt-1 block">
+                                    ★ {peer.rating ? Number(peer.rating).toFixed(1) : '0.0'}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Sessions</span>
+                                  <span className="text-xs font-bold text-white mt-1 block">
+                                    {peer.totalSessionsCompleted ?? 0}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Activity</span>
+                                  <span className="text-xs font-bold text-white mt-1 block">
+                                    {peer.activityScore ?? 0}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Skills match matching lists */}
+                              <div className="space-y-3.5 text-left">
+                                <div className="space-y-1">
+                                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                                    <span className="w-1 h-1 rounded-full bg-emerald-400"></span>
+                                    Can Teach You:
+                                  </span>
+                                  <div className="flex flex-wrap gap-1">
+                                    {(peer.skillsToTeach ?? []).map((skill: string) => (
+                                      <span
+                                        key={skill}
+                                        className="text-[10px] font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full"
+                                      >
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div className="space-y-1">
+                                  <span className="text-[10px] font-bold text-violet-400 uppercase tracking-wider flex items-center gap-1">
+                                    <span className="w-1 h-1 rounded-full bg-violet-400"></span>
+                                    Wants to Learn:
+                                  </span>
+                                  <div className="flex flex-wrap gap-1">
+                                    {(peer.skillsToLearn ?? []).map((skill: string) => (
+                                      <span
+                                        key={skill}
+                                        className="text-[10px] font-medium text-violet-300 bg-violet-500/10 border border-violet-500/20 px-2 py-0.5 rounded-full"
+                                      >
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => alert(`Connecting with ${peerName}...`)}
+                              className="mt-6 w-full py-2 bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/20 hover:border-transparent text-xs font-bold uppercase tracking-wider rounded-xl transition duration-200 hover:cursor-pointer"
+                            >
+                              Connect Peer
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  {/* Header card with Action */}
+                  <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xl">
+                    <div>
+                      <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        Workspace Dashboard
+                      </h1>
+                      <p className="text-slate-400 text-sm mt-1 font-medium">
+                        Configure your expertise, match settings, and view system stats.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsSkillsModalOpen(true)}
+                      className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 px-5 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-[0.98] hover:cursor-pointer"
+                    >
+                      Update Skills
+                    </button>
+                  </div>
+
+                  {/* Section 1: Basic Information */}
+                  <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 sm:p-8 shadow-xl">
+                    <h3 className="text-lg font-bold text-white tracking-wide border-b border-white/[0.06] pb-4">
+                      Basic Information
+                    </h3>
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Full Name</label>
+                        <p className="mt-1 text-slate-200 font-medium text-base">{profile.name}</p>
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Email Address</label>
+                        <p className="mt-1 text-slate-200 font-medium text-base">{profile.email}</p>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Member Since</label>
+                        <p className="mt-1 text-slate-200 font-medium text-base">
+                          {profile.createdAt ? new Date(profile.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Skills to Learn */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
-                      Skills to Learn
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {skillData?.skillsToLearn && skillData.skillsToLearn.length > 0 ? (
-                        skillData.skillsToLearn.map((skill) => (
-                          <span
-                            key={skill}
-                            className="text-xs font-semibold text-violet-300 bg-violet-500/10 border border-violet-500/20 px-3.5 py-1.5 rounded-full"
-                          >
-                            {skill}
-                          </span>
-                        ))
-                      ) : (
-                        <p className="text-sm text-slate-500 italic">No skills listed yet.</p>
-                      )}
+                  {/* Section 2: Skills & Performance */}
+                  <div className="bg-[#0d111c] border border-white/[0.06] rounded-3xl p-6 sm:p-8 shadow-xl space-y-8">
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                      <h3 className="text-lg font-bold text-white tracking-wide">
+                        Skills & Activity
+                      </h3>
                     </div>
+
+                    {/* Skill Stats Mini Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="bg-[#141a29] border border-white/[0.04] p-5 rounded-2xl">
+                        <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">Activity Score</span>
+                        <p className="mt-2 text-2xl font-black text-white">{skillData?.activityScore ?? 0}</p>
+                      </div>
+                      <div className="bg-[#141a29] border border-white/[0.04] p-5 rounded-2xl">
+                        <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">System Rating</span>
+                        <p className="mt-2 text-2xl font-black text-white">{skillData?.rating ? Number(skillData.rating).toFixed(1) : '0.0'}</p>
+                      </div>
+                      <div className="bg-[#141a29] border border-white/[0.04] p-5 rounded-2xl">
+                        <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block">Total Sessions</span>
+                        <p className="mt-2 text-2xl font-black text-white">{skillData?.totalSessionsCompleted ?? 0}</p>
+                      </div>
+                    </div>
+
+                    {/* Skills tags lists */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Skills to Teach */}
+                      <div className="space-y-4">
+                        <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                          Skills to Teach
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {skillData?.skillsToTeach && skillData.skillsToTeach.length > 0 ? (
+                            skillData.skillsToTeach.map((skill) => (
+                              <span
+                                key={skill}
+                                className="text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full"
+                              >
+                                {skill}
+                              </span>
+                            ))
+                          ) : (
+                            <p className="text-sm text-slate-500 italic">No skills listed yet.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Skills to Learn */}
+                      <div className="space-y-4">
+                        <h4 className="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+                          Skills to Learn
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {skillData?.skillsToLearn && skillData.skillsToLearn.length > 0 ? (
+                            skillData.skillsToLearn.map((skill) => (
+                              <span
+                                key={skill}
+                                className="text-xs font-semibold text-violet-300 bg-violet-500/10 border border-violet-500/20 px-3.5 py-1.5 rounded-full"
+                              >
+                                {skill}
+                              </span>
+                            ))
+                          ) : (
+                            <p className="text-sm text-slate-500 italic">No skills listed yet.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
-                </div>
-
-              </div>
-
+                </>
+              )}
             </div>
 
           </div>
@@ -379,7 +571,7 @@ const DashboardPage = () => {
                   {skillsToTeach.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full"
                     >
                       {skill}
                       <button
