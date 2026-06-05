@@ -380,6 +380,9 @@ export const getMe = asyncHandler(async (
 ) => {
 
     try {
+        if (!req.user) {
+            throw new ApiError(401, "Not authenticated!");
+        }
         const userId = req.user.id;
         if (!userId) {
             throw new ApiError(400, "UserId not found!");
@@ -402,11 +405,15 @@ export const googleCallback = asyncHandler(
     async (req: Request, res: Response) => {
         const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
         try {
-            const email = req.user.emails[0].value;
+            if (!req.user) {
+                return res.redirect(`${CLIENT_URL}/login?error=auth_failed`);
+            }
+            const email = req.user.emails?.[0]?.value;
             if (!email) {
                 return res.redirect("http://localhost:5173/login?error=no_email");
             }
-            const name = req.user.displayName;
+            const name: string = req.user.displayName || "";
+            const avatarUrl: string = (req.user as any).photos?.[0]?.value || "";
 
             let user = await User.findOne({ email });
 
@@ -414,6 +421,7 @@ export const googleCallback = asyncHandler(
                 user = await User.create({
                     email,
                     name,
+                    avatarUrl,
                 });
             }
 

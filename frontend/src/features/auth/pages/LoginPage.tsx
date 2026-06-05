@@ -66,7 +66,7 @@ const LoginPage = () => {
                     <div className="max-w-md mx-auto w-full space-y-8 mt-4 lg:mt-0">
                         <div>
                             <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-widest uppercase mb-6">
-                                Peer2Peer Hub
+                                Synapse Hub
                             </span>
                             <h1 className="text-4xl font-bold tracking-tight text-white mb-2">
                                 Welcome Back

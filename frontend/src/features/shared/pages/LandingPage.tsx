@@ -280,7 +280,7 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5 bg-black/40 py-10">
         <div className="max-w-7xl mx-auto px-6 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} Peer2Peer Network. All rights reserved.
+          © {new Date().getFullYear()} Synapse Network. All rights reserved.
         </div>
       </footer>
     </div>

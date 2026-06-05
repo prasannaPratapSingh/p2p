@@ -1,4 +1,4 @@
-# Peer2Peer Skill Swap Backend
+# Synapse Backend
 
 A TypeScript Express backend for a peer-to-peer skill swap platform. This repository hosts the backend service under `backend/`, including JWT authentication, skill profile management, wallet tracking, match discovery, connection requests, and meeting scheduling support.
 
@@ -75,7 +75,7 @@ backend/
 1. Clone the repo
 
 ```bash
-cd peer2peer
+cd synapse
 ```
 
 2. Install backend dependencies
@@ -96,7 +96,7 @@ cp .env.example .env
 ```dotenv
 PORT=4000
 NODE_ENV=development
-DB_URL=mongodb://localhost:27017/peer2peer
+DB_URL=mongodb://localhost:27017/synapse
 ACCESS_TOKEN_SECRET=your_access_secret
 REFRESH_TOKEN_SECRET=your_refresh_secret
 REDIS_URL=redis://localhost:6379
