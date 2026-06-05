@@ -10,7 +10,8 @@ import { generateAccessToken, generateRefreshToken } from "./auth.utils.js";
 import { redisClient } from "../../infrastructure/redis/redis.js";
 import jwt from 'jsonwebtoken';
 import type { JwtPayload } from "jsonwebtoken";
-
+import userModel from "../../models/user/user.model.js";
+import config from "../../config/envConfig.js"
 const salt = envConfig.SALT_VALUE;
 
 interface CustomJwtPayload extends JwtPayload {
@@ -379,6 +380,9 @@ export const getMe = asyncHandler(async (
 ) => {
 
     try {
+        if (!req.user) {
+            throw new ApiError(401, "Not authenticated!");
+        }
         const userId = req.user.id;
         if (!userId) {
             throw new ApiError(400, "UserId not found!");
@@ -396,3 +400,66 @@ export const getMe = asyncHandler(async (
     }
 
 })
+
+export const googleCallback = asyncHandler(
+    async (req: Request, res: Response) => {
+        const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+        try {
+            if (!req.user) {
+                return res.redirect(`${CLIENT_URL}/login?error=auth_failed`);
+            }
+            const email = req.user.emails?.[0]?.value;
+            if (!email) {
+                return res.redirect("http://localhost:5173/login?error=no_email");
+            }
+            const name: string = req.user.displayName || "";
+            const avatarUrl: string = (req.user as any).photos?.[0]?.value || "";
+
+            let user = await User.findOne({ email });
+
+            if (!user) {
+                user = await User.create({
+                    email,
+                    name,
+                    avatarUrl,
+                });
+            }
+
+            const accessToken = generateAccessToken(
+                String(user._id)
+            );
+
+            const refreshToken = generateRefreshToken(
+                String(user._id)
+            );
+
+            const hashedRefreshToken = await bcrypt.hash(
+                refreshToken,
+                envConfig.SALT_VALUE
+            );
+
+            user.refreshToken = hashedRefreshToken;
+            await user.save();
+
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 15 * 60 * 1000,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+
+
+            res.redirect(`${CLIENT_URL}`);
+        } catch (error) {
+            console.error(error);
+            res.redirect(`${CLIENT_URL}/login?error=oauth_failed`);
+        }
+    }
+);

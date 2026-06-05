@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 import AppLayout from "./AppLayout";
 import LandingPage from "../features/shared/pages/LandingPage";
 import DashboardPage from "../features/shared/pages/DashboardPage";
+import MeetingsPage from "../features/connections/pages/MeetingsPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import Protected from "../features/auth/components/Protected";
@@ -36,6 +37,14 @@ export const routes = createBrowserRouter([
                 element: (
                     <Protected>
                         <DashboardPage />
+                    </Protected>
+                )
+            },
+            {
+                path: "/meetings",
+                element: (
+                    <Protected>
+                        <MeetingsPage />
                     </Protected>
                 )
             }

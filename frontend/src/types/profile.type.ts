@@ -23,4 +23,8 @@ export interface ProfileState {
     profile: Profile | null;
     loading: boolean;
     error: string | null;
+    matches: any[] | null;
+    loadingMatches: boolean;
+    matchesError: string | null;
+    view: 'profile' | 'matches';
 }

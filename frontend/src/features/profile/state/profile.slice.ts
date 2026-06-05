@@ -5,6 +5,10 @@ const initialState: ProfileState = {
     profile: null,
     loading: false,
     error: null,
+    matches: null,
+    loadingMatches: false,
+    matchesError: null,
+    view: 'profile',
 };
 
 const profileSlice = createSlice({
@@ -21,13 +25,39 @@ const profileSlice = createSlice({
         setError: (state, action: PayloadAction<string | null>) => {
             state.error = action.payload;
         },
+        setMatches: (state, action: PayloadAction<any[] | null>) => {
+            state.matches = action.payload;
+            state.matchesError = null;
+        },
+        setLoadingMatches: (state, action: PayloadAction<boolean>) => {
+            state.loadingMatches = action.payload;
+        },
+        setMatchesError: (state, action: PayloadAction<string | null>) => {
+            state.matchesError = action.payload;
+        },
+        setView: (state, action: PayloadAction<'profile' | 'matches'>) => {
+            state.view = action.payload;
+        },
         clearProfile: (state) => {
             state.profile = null;
             state.error = null;
             state.loading = false;
+            state.matches = null;
+            state.loadingMatches = false;
+            state.matchesError = null;
+            state.view = 'profile';
         },
     },
 });
 
-export const { setProfile, setLoading, setError, clearProfile } = profileSlice.actions;
+export const {
+    setProfile,
+    setLoading,
+    setError,
+    setMatches,
+    setLoadingMatches,
+    setMatchesError,
+    setView,
+    clearProfile
+} = profileSlice.actions;
 export default profileSlice.reducer;

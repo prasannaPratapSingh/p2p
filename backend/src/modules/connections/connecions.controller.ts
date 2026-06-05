@@ -311,8 +311,8 @@ export const getMyConnections = asyncHandler(async (
                 { receiverId: currentUserId }
             ]
         })
-            .populate("senderId", "name email")
-            .populate("receiverId", "name email")
+            .populate("senderId", "name email avatarUrl")
+            .populate("receiverId", "name email avatarUrl")
             .sort({ createdAt: -1 });
 
 
@@ -335,8 +335,8 @@ export const getAllConnections = asyncHandler(async (
 ) => {
     try {
         const connections = await Connection.find({})
-            .populate("senderId", "name email")
-            .populate("receiverId", "name email")
+            .populate("senderId", "name email avatarUrl")
+            .populate("receiverId", "name email avatarUrl")
             .sort({ createdAt: -1 });
 
         return res.status(200).json(
