@@ -3,9 +3,9 @@ import { Document } from 'mongoose';
 export interface IUser extends Document {
     name: string;
     email: string;
-    password?: string;
+    password?: string | null;
     avatarUrl: string;
-    refreshToken: string | null
+    refreshToken: string | null;
     createdAt: Date;
     updatedAt: Date;
 }

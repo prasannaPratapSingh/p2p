@@ -47,7 +47,7 @@ const Navbar = () => {
           onClick={() => navigate('/')}
           className="text-lg font-semibold text-white hover:text-indigo-400 transition-colors hover:cursor-pointer"
         >
-          Peer2Peer
+          Synapse
         </button>
 
         {user ? (
