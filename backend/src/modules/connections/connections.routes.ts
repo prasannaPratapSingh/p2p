@@ -18,6 +18,16 @@ router.post('/request', authenticateToken, sendConnectionRequest);
  */
 router.post('/respond', authenticateToken, respondToConnectionRequest);
 
+router.post('/accept', authenticateToken, (req, res, next) => {
+    req.body.action = 'accepted';
+    void respondToConnectionRequest(req, res, next);
+});
+
+router.post('/reject', authenticateToken, (req, res, next) => {
+    req.body.action = 'rejected';
+    void respondToConnectionRequest(req, res, next);
+});
+
 /**
  * POST /api/connection/complete
  * Body params: { connectionId }

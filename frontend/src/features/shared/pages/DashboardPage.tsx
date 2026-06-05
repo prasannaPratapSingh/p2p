@@ -1,7 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router';
 import { useProfile } from '../../profile/hook/profile.hook';
+import { useConnections } from '../../connections/hook/connections.hook';
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
+  
   const {
     profile,
     loading,
@@ -17,6 +21,8 @@ const DashboardPage = () => {
     handleSetView
   } = useProfile();
 
+  const { handleRequestConnection } = useConnections();
+
   const skillData = profile?.userSkillData;
 
   // Modals and form state
@@ -25,6 +31,14 @@ const DashboardPage = () => {
   const [skillsToLearn, setSkillsToLearn] = useState<string[]>([]);
   const [newTeachSkill, setNewTeachSkill] = useState('');
   const [newLearnSkill, setNewLearnSkill] = useState('');
+
+  // Connect Peer modal state
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [selectedPeerId, setSelectedPeerId] = useState<string | null>(null);
+  const [selectedPeerName, setSelectedPeerName] = useState<string>('');
+  const [proposedTime, setProposedTime] = useState('');
+  const [connectError, setConnectError] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   // Avatar uploading state
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -113,6 +127,42 @@ const DashboardPage = () => {
       void fetchMatches();
     } catch (err: any) {
       // Handled by hook/state
+    }
+  };
+
+  const handleOpenConnectModal = (peerId: string, peerName: string) => {
+    setSelectedPeerId(peerId);
+    setSelectedPeerName(peerName);
+    setProposedTime('');
+    setConnectError(null);
+    setIsConnectModalOpen(true);
+  };
+
+  const handleConnectSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPeerId || !proposedTime) {
+      setConnectError('Please specify a valid proposed meeting time.');
+      return;
+    }
+
+    const meetingDate = new Date(proposedTime);
+    if (isNaN(meetingDate.getTime()) || meetingDate <= new Date()) {
+      setConnectError('Proposed time must be a valid date in the future.');
+      return;
+    }
+
+    try {
+      setConnectError(null);
+      setIsConnecting(true);
+      await handleRequestConnection(selectedPeerId, meetingDate);
+      setIsConnectModalOpen(false);
+      alert('Swap connection request sent successfully!');
+      // Navigate to meetings page so they can see it pending
+      navigate('/meetings');
+    } catch (err: any) {
+      setConnectError(err?.response?.data?.message || err?.message || 'Failed to send connection request.');
+    } finally {
+      setIsConnecting(false);
     }
   };
 
@@ -205,13 +255,13 @@ const DashboardPage = () => {
                 Find My Peer
               </button>
 
-              {/* Get All My Meetings Button */}
+              {/* Your Meetings Button */}
               <button
                 type="button"
-                onClick={() => alert('Feature coming soon: Retrieve all scheduled peer meetings.')}
+                onClick={() => navigate('/meetings')}
                 className="mt-3 w-full py-2.5 px-4 bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-semibold uppercase tracking-wider rounded-xl transition duration-200 text-slate-300 hover:text-white hover:cursor-pointer"
               >
-                Get All My Meetings
+                Your Meetings
               </button>
 
               {/* Stats: Rating and Sessions */}
@@ -393,7 +443,7 @@ const DashboardPage = () => {
 
                             <button
                               type="button"
-                              onClick={() => alert(`Connecting with ${peerName}...`)}
+                              onClick={() => handleOpenConnectModal(peerUser._id, peerName)}
                               className="mt-6 w-full py-2 bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/20 hover:border-transparent text-xs font-bold uppercase tracking-wider rounded-xl transition duration-200 hover:cursor-pointer"
                             >
                               Connect Peer
@@ -532,6 +582,66 @@ const DashboardPage = () => {
         )}
       </div>
 
+      {/* Modern Connect Peer Modal */}
+      {isConnectModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#07090e]/85 backdrop-blur-md transition-opacity" onClick={() => setIsConnectModalOpen(false)}></div>
+          
+          <div className="relative bg-[#0d111c] border border-white/[0.08] rounded-3xl w-full max-w-md p-6 sm:p-8 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+              <h2 className="text-lg font-bold text-white">Connect with {selectedPeerName}</h2>
+              <button
+                onClick={() => setIsConnectModalOpen(false)}
+                className="text-slate-400 hover:text-white transition text-2xl font-light w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 hover:cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleConnectSubmit} className="mt-6 space-y-5">
+              {connectError && (
+                <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-300">
+                  {connectError}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Propose Swap Time
+                </label>
+                <input
+                  type="datetime-local"
+                  required
+                  value={proposedTime}
+                  onChange={(e) => setProposedTime(e.target.value)}
+                  className="w-full bg-[#141a29] border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition duration-200"
+                />
+                <p className="text-[10px] text-slate-500">
+                  Choose a date and time to meet for the skill-swap session.
+                </p>
+              </div>
+
+              <div className="mt-8 border-t border-white/[0.06] pt-5 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsConnectModalOpen(false)}
+                  className="bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-semibold text-sm py-2 px-4 rounded-xl transition duration-200 border border-white/10 hover:cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isConnecting}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2 px-5 rounded-xl transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
+                >
+                  {isConnecting ? 'Sending...' : 'Send Request'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Modern Skills Modal */}
       {isSkillsModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -572,7 +682,7 @@ const DashboardPage = () => {
                   {skillsToTeach.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full"
                     >
                       {skill}
                       <button
