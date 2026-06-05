@@ -1,4 +1,5 @@
 import { useDispatch } from "react-redux"
+import { useCallback } from "react";
 import type { loginBody, registerBody } from "../../../types/auth.type"
 import { setError, setLoading, setUser } from "../state/auth.slice";
 import { clearProfile } from '../../profile/state/profile.slice';
@@ -8,7 +9,7 @@ export const useAuth = () => {
 
     const dispatch = useDispatch();
 
-    const handleRegister = async ({ name, email, password }: registerBody) => {
+    const handleRegister = useCallback(async ({ name, email, password }: registerBody) => {
         try {
             dispatch(setLoading(true));
 
@@ -20,9 +21,9 @@ export const useAuth = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    const handleLogin = async ({ email, password }: loginBody) => {
+    const handleLogin = useCallback(async ({ email, password }: loginBody) => {
         try {
             dispatch(setLoading(true));
             const data = await login({ email, password });
@@ -34,23 +35,23 @@ export const useAuth = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         try {
             dispatch(setLoading(true));
             await logout();
-            dispatch(setUser(null));
-            dispatch(clearProfile());
-            return null;
         } catch (error: any) {
+            console.error("Logout API failed", error);
             dispatch(setError(error?.response?.data?.message || error?.message || 'Logout failed'));
         } finally {
+            dispatch(setUser(null));
+            dispatch(clearProfile());
             dispatch(setLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    const handleGetMe = async () => {
+    const handleGetMe = useCallback(async () => {
         try {
             dispatch(setLoading(true));
             const data = await getMeUuser();
@@ -66,7 +67,7 @@ export const useAuth = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    }
+    }, [dispatch]);
 
     return { handleLogin, handleLogout, handleRegister, handleGetMe };
 

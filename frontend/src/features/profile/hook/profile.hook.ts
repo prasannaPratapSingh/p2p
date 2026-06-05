@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { setError, setLoading, setProfile } from '../state/profile.slice';
-import { getProfile } from '../service/profileService';
+import { getProfile, updateSkills, uploadAvatar } from '../service/profileService';
 import type { RootState } from '../../../app/store/app.store';
 
 export const useProfile = () => {
@@ -23,5 +23,37 @@ export const useProfile = () => {
         }
     };
 
-    return { profile, loading, error, fetchProfile };
+    const handleUpdateSkills = async (skillsToLearn: string[], skillsToTeach: string[]) => {
+        try {
+            dispatch(setLoading(true));
+            await updateSkills(skillsToLearn, skillsToTeach);
+            // Refresh profile data
+            const data = await getProfile();
+            dispatch(setProfile(data));
+            return data;
+        } catch (error: any) {
+            dispatch(setError(error?.response?.data?.message || error?.message || 'Failed to update skills'));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    };
+
+    const handleUploadAvatar = async (file: File) => {
+        try {
+            dispatch(setLoading(true));
+            await uploadAvatar(file);
+            // Refresh profile data
+            const data = await getProfile();
+            dispatch(setProfile(data));
+            return data;
+        } catch (error: any) {
+            dispatch(setError(error?.response?.data?.message || error?.message || 'Failed to upload avatar'));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    };
+
+    return { profile, loading, error, fetchProfile, handleUpdateSkills, handleUploadAvatar };
 };

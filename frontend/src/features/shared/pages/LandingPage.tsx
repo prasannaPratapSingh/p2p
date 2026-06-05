@@ -76,13 +76,13 @@ const LandingPage = () => {
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 <button
                   onClick={() => navigate('/register')}
-                  className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-2xl transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)]"
+                  className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-2xl transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] hover:cursor-pointer"
                 >
                   Start Learning For Free
                 </button>
                 <button
                   onClick={() => navigate('/login')}
-                  className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 backdrop-blur-md"
+                  className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 backdrop-blur-md hover:cursor-pointer"
                 >
                   Explore the Network
                 </button>
@@ -268,7 +268,7 @@ const LandingPage = () => {
               </p>
               <button
                 onClick={() => navigate('/register')}
-                className="px-8 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors duration-300 shadow-lg shadow-indigo-500/20"
+                className="px-8 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors duration-300 shadow-lg shadow-indigo-500/20 hover:cursor-pointer"
               >
                 Create Your Free Account
               </button>
