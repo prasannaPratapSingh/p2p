@@ -110,6 +110,7 @@ const DashboardPage = () => {
     try {
       await handleUpdateSkills(skillsToLearn, skillsToTeach);
       setIsSkillsModalOpen(false);
+      void fetchMatches();
     } catch (err: any) {
       // Handled by hook/state
     }
