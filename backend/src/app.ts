@@ -16,6 +16,12 @@ import matchRouter from './modules/match/match.routes.js';
 import connectionRouter from './modules/connections/connections.routes.js';
 import profileRouter from './modules/profile/profile.routes.js';
 
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20"
+
+import config from './config/envConfig.js';
+import { refreshToken } from './modules/auth/auth.controller.js';
+
 const app = express();
 
 app.use(cors({
@@ -58,6 +64,22 @@ app.use('/api/profile', profileRouter)
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/api/docs.json', (_, res) => res.json(swaggerDocument));
+
+app.use(passport.initialize());
+passport.use(new GoogleStrategy({
+    clientID: config.GOOGLE_CLIENT_ID,
+    clientSecret: config.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:4001/api/auth/google/callback"
+}, (accessToken, refreshToken, profile, done) => {
+    
+    return done(null, profile);
+}));
+
+
+
+
+
+
 
 app.use(errorHandler);
 

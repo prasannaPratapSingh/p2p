@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { validateRequest } from "../../middlewares/validateRequest.middleware.js";
 import { loginSchema, registerSchema } from "./auth.validation.js";
-import { getMe, login, logout, refreshToken, register } from "./auth.controller.js";
+import { getMe, login, logout, refreshToken, register , googleCallback} from "./auth.controller.js";
 import { strictAuthLimiter } from "../../middlewares/rateLimiter.middleware.js";
 import authenticateToken from "./auth.middleware.js";
-
+import config from "../../config/envConfig.js";
+import passport from "passport";
 const router = Router();
 
 /**
@@ -32,6 +33,29 @@ router.post('/refresh', refreshToken);
 router.post('/logout', logout);
 
 router.get('/get-me', authenticateToken, getMe);
+
+
+router.get("/google",
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+    })
+)
+
+router.get("/google/callback",
+    passport.authenticate("google",
+        {
+            session: false,
+            failureRedirect: config.NODE_ENV === "development" ? "http://localhost:5173/login" : "/login"
+        }),
+
+    googleCallback,
+)
+
+
+
+
+
+
 
 export default router;
 
