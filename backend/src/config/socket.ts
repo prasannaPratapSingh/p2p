@@ -22,7 +22,7 @@ export const initSocket = (server: any) => {
 
         if (userId && userId !== 'undefined') {
 
-            const userRoom = `user${userId}`;
+            const userRoom = `user_${userId}`;
 
             socket.join(userRoom);
 

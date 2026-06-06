@@ -5,6 +5,6 @@ import authenticateToken from "../auth/auth.middleware.js";
 const router = Router();
 
 router.get('/', authenticateToken, getUserNotification);
-router.post('/mark-read-all', markAsRead)
+router.post('/mark-read-all', authenticateToken, markAsRead);
 
 export default router;

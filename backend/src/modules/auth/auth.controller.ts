@@ -7,6 +7,7 @@ import envConfig from "../../config/envConfig.js";
 import User from "../../models/user/user.model.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import { generateAccessToken, generateRefreshToken } from "./auth.utils.js";
+import { WalletModel } from "../wallet/wallet.model.js";
 import { redisClient } from "../../infrastructure/redis/redis.js";
 import jwt from 'jsonwebtoken';
 import type { JwtPayload } from "jsonwebtoken";
@@ -56,6 +57,13 @@ export const register = asyncHandler(async (
         password: hashedPass,
         email
     })
+
+    // Auto-create wallet for the newly registered user
+    await WalletModel.create({
+        userId: userData._id,
+        balance: 3.0,
+        escrowBalance: 0.0
+    });
 
     const { password: _, ...safeUserData } = userData.toObject();
 
@@ -422,6 +430,13 @@ export const googleCallback = asyncHandler(
                     email,
                     name,
                     avatarUrl,
+                });
+
+                // Auto-create wallet for the newly registered Google user
+                await WalletModel.create({
+                    userId: user._id,
+                    balance: 3.0,
+                    escrowBalance: 0.0
                 });
             }
 

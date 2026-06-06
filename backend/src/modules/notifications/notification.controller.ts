@@ -40,15 +40,19 @@ export const markAsRead = asyncHandler(async (
     try {
 
         const userId = req.user?.id;
+        console.log("Marking notifications as read for userId:", userId);
 
         if (!userId) {
             throw new ApiError(400, "UserID does not exist")
         }
 
-        await Notification.updateMany(
+        const result = await Notification.updateMany(
             { recipient: userId, isRead: false },
             { $set: { isRead: true } }
         )
+
+        console.log(result);
+
 
         return res.status(200).json(new ApiResponse(200, "Your all notifications marked as read!"));
 
