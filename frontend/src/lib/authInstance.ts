@@ -19,8 +19,10 @@ const processQueue = (error: any = null) => {
     failedQueue = [];
 };
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4001";
+
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:4001/api",
+    baseURL: `${backendUrl}/api`,
     withCredentials: true,
 });
 
@@ -63,9 +65,10 @@ axiosInstance.interceptors.response.use(
         isRefreshing = true;
 
         try {
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4001";
             // IMPORTANT: normal axios use karo
             await axios.post(
-                "http://localhost:4001/api/auth/refresh",
+                `${backendUrl}/api/auth/refresh`,
                 {},
                 {
                     withCredentials: true,

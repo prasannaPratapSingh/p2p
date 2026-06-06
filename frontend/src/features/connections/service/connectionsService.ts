@@ -33,7 +33,7 @@ export const rejectConnection = async (connectionId: string): Promise<any> => {
 export const getMyConnections = async (): Promise<any[]> => {
     try {
         const response = await axiosInstance.get('/connection/me');
-        return response.data.data;
+        return (response.data as any).data;
     } catch (error: any) {
         console.error('Error fetching connections', error.message);
         throw error;

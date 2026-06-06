@@ -31,7 +31,8 @@ const LoginPage = () => {
     const { handleLogin } = useAuth();
 
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:4001/api/auth/google';
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4001';
+        window.location.href = `${backendUrl}/api/auth/google`;
     };
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

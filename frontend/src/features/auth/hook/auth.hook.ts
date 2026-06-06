@@ -3,7 +3,9 @@ import { useCallback } from "react";
 import type { loginBody, registerBody } from "../../../types/auth.type"
 import { setError, setLoading, setUser } from "../state/auth.slice";
 import { clearProfile } from '../../profile/state/profile.slice';
+import { clearNotifications } from '../../notifications/state/notification.slice';
 import { getMeUuser, login, logout, register } from "../service/authService";
+import { toast } from "react-hot-toast";
 
 export const useAuth = () => {
 
@@ -14,9 +16,12 @@ export const useAuth = () => {
             dispatch(setLoading(true));
 
             const data = await register({ name, email, password });
+            toast.success("Registration successful! Please login.");
             return data;
         } catch (error: any) {
-            dispatch(setError(error?.response?.data?.message || error?.message || 'Registration failed'));
+            const message = error?.response?.data?.message || error?.message || 'Registration failed';
+            dispatch(setError(message));
+            toast.error(message);
             throw error;
         } finally {
             dispatch(setLoading(false));
@@ -28,9 +33,12 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             const data = await login({ email, password });
             dispatch(setUser(data));
+            toast.success("Welcome back!");
             return data;
         } catch (error: any) {
-            dispatch(setError(error?.response?.data?.message || error?.message || 'Login failed'));
+            const message = error?.response?.data?.message || error?.message || 'Login failed';
+            dispatch(setError(message));
+            toast.error(message);
             throw error;
         } finally {
             dispatch(setLoading(false));
@@ -41,12 +49,16 @@ export const useAuth = () => {
         try {
             dispatch(setLoading(true));
             await logout();
+            toast.success("Signed out successfully.");
         } catch (error: any) {
             console.error("Logout API failed", error);
-            dispatch(setError(error?.response?.data?.message || error?.message || 'Logout failed'));
+            const message = error?.response?.data?.message || error?.message || 'Logout failed';
+            dispatch(setError(message));
+            toast.error(message);
         } finally {
             dispatch(setUser(null));
             dispatch(clearProfile());
+            dispatch(clearNotifications());
             dispatch(setLoading(false));
         }
     }, [dispatch]);

@@ -16,7 +16,8 @@ const RegisterPage = () => {
     const [backendError, setBackendError] = useState<string | null>(null);
 
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:4001/api/auth/google';
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4001';
+        window.location.href = `${backendUrl}/api/auth/google`;
     };
 
     const onSubmit = async (data: RegisterFormValues) => {
