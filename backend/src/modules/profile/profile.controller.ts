@@ -12,7 +12,7 @@ export const uploadProfileAvatar = asyncHandler(async (
     next: NextFunction
 ) => {
     try {
-        const userId = req.user.id;
+        const userId = req?.user?.id;
 
         if (!req.file) {
             throw new ApiError(400, "Please provide an avatar image file.");
@@ -47,7 +47,7 @@ export const getMyProfile = asyncHandler(async (
     next: NextFunction
 ) => {
 
-    const userId = req.user.id;
+    const userId = req.user?.id;
 
     if (!userId) {
         throw new ApiError(400, "Unauhorized access blocked. UserId not provided.")

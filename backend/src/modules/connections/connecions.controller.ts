@@ -9,6 +9,9 @@ import mongoose from "mongoose";
 import { WalletModel } from "../wallet/wallet.model.js";
 import { logger } from "../../config/logger.js";
 import getJitsiMeetingLink from "./connections.utils.js";
+import { Notification } from "../../models/notifications/notification.model.js";
+import { NotificationType } from "../notifications/notification.interface.js";
+import { sendRealTimeNotification } from "../../config/socket.js";
 
 export const sendConnectionRequest = asyncHandler(async (
     req: Request<{}, {}, connectionRequest>,
@@ -16,8 +19,12 @@ export const sendConnectionRequest = asyncHandler(async (
     next: NextFunction
 ) => {
     try {
-        const senderId = req.user.id;
+        const senderId = req.user?.id;
         const { receiverId, proposedTime } = req.body;
+
+        if (!senderId) {
+            throw new ApiError(401, "Unauthorized.");
+        }
 
         if (!receiverId || !proposedTime) {
             throw new ApiError(400, "Receiver identity and propposed time is required.");
@@ -27,8 +34,6 @@ export const sendConnectionRequest = asyncHandler(async (
         if (isNaN(meetingDate.getTime()) || meetingDate <= new Date()) {
             throw new ApiError(400, "Proposed time must be a valid future date.");
         }
-
-
 
         if (senderId.toString() === receiverId.toString()) {
             throw new ApiError(400, "You cannot send swap-request to yoursel");
@@ -47,7 +52,7 @@ export const sendConnectionRequest = asyncHandler(async (
 
         const senderConflict = await Connection.findOne({
             status: "accepted",
-            $or: [{ senderId: senderId }, { receiverId: receiverId }],
+            $or: [{ senderId: senderId! }, { receiverId: receiverId! }],
             proposedTime: { $gt: bufferStart, $lt: bufferEnd }
         })
 
@@ -57,7 +62,7 @@ export const sendConnectionRequest = asyncHandler(async (
 
         const receiverConflict = await Connection.findOne({
             status: "accepted",
-            $or: [{ senderId: receiverId }, { receiverId: receiverId }],
+            $or: [{ senderId: receiverId! }, { receiverId: receiverId! }],
             scheduledTime: { $gt: bufferStart, $lt: bufferEnd }
         });
         if (receiverConflict) {
@@ -66,8 +71,8 @@ export const sendConnectionRequest = asyncHandler(async (
 
         const existingConnection = await Connection.findOne({
             $or: [
-                { senderId: senderId, receiverId: receiverId, status: { $in: ["pending", "accepted"] } },
-                { senderId: receiverId, receiverId: senderId, status: { $in: ["pending", "accepted"] } }
+                { senderId: senderId!, receiverId: receiverId!, status: { $in: ["pending", "accepted"] } },
+                { senderId: receiverId!, receiverId: senderId!, status: { $in: ["pending", "accepted"] } }
             ]
         });
 
@@ -81,11 +86,23 @@ export const sendConnectionRequest = asyncHandler(async (
         }
 
         const newRequest = await Connection.create({
-            senderId,
-            receiverId,
+            senderId: senderId!,
+            receiverId: receiverId!,
             proposedTime: meetingDate,
             status: "pending"
         })
+
+        const alertDoc = await Notification.create({
+            recipient: receiverId,
+            sender: senderId,
+            type: NotificationType.SWAP_REQUEST,
+            message: `${senderId} wants to swap skills!`,
+            link: "/dashboard"
+        })
+
+        const activeNotificationPayload = await alertDoc.populate("sender", "name avatarUrl");
+
+        sendRealTimeNotification(receiverId, activeNotificationPayload);
 
         return res.status(201).json(new ApiResponse(201, "Skill-swap connection request dispatched successfully!", newRequest));
     }
@@ -107,7 +124,11 @@ export const respondToConnectionRequest = asyncHandler(async (
 
     try {
 
-        const receiverId = req.user.id;
+        const receiverId = req.user?.id;
+        if (!receiverId) {
+            throw new ApiError(401, "Unauthorized.");
+        }
+
         const { connectionId, action } = req.body;
 
         if (!connectionId || !action) {
@@ -120,7 +141,7 @@ export const respondToConnectionRequest = asyncHandler(async (
 
         const connection = await Connection.findOne({
             _id: connectionId,
-            receiverId: receiverId,
+            receiverId: receiverId!,
             status: "pending"
         }).session(session);
 
@@ -131,6 +152,18 @@ export const respondToConnectionRequest = asyncHandler(async (
         if (action === 'rejected') {
             connection.status = 'rejected';
             await connection.save({ session });
+
+            const alertDoc = await Notification.create([{
+                recipient: connection.senderId!,
+                sender: receiverId,
+                type: NotificationType.SWAP_CANCEL,
+                message: `${receiverId} has rejected your skill-swap request.`,
+                link: "/dashboard"
+            }], { session });
+
+            const activeNotificationPayload = await alertDoc[0]?.populate("sender", "name avatarUrl");
+
+            sendRealTimeNotification(connection.senderId!.toString(), activeNotificationPayload);
 
             await session.commitTransaction();
             session.endSession();
@@ -148,8 +181,8 @@ export const respondToConnectionRequest = asyncHandler(async (
         const absoluteConflict = await Connection.findOne({
             status: "accepted",
             $or: [
-                { senderId: connection.senderId }, { receiverId: connection.senderId },
-                { senderId: receiverId }, { receiverId: receiverId }
+                { senderId: connection.senderId! }, { receiverId: connection.senderId! },
+                { senderId: receiverId! }, { receiverId: receiverId! }
             ],
             scheduledTime: { $gt: bufferStart, $lt: bufferEnd }
         }).session(session);
@@ -160,8 +193,8 @@ export const respondToConnectionRequest = asyncHandler(async (
 
 
 
-        const senderWallet = await WalletModel.findOne({ userId: connection.senderId }).session(session);
-        const receiverWallet = await WalletModel.findOne({ userId: receiverId }).session(session);
+        const senderWallet = await WalletModel.findOne({ userId: connection.senderId! }).session(session);
+        const receiverWallet = await WalletModel.findOne({ userId: receiverId! }).session(session);
 
         if (!senderWallet || !receiverWallet) {
             throw new ApiError(404, "One of the peer wallets is not initialized.");
@@ -173,6 +206,19 @@ export const respondToConnectionRequest = asyncHandler(async (
         if (receiverWallet.balance < 1.0) {
             throw new ApiError(400, "You need at least 1.0 token in your wallet to accept this skill-swap.");
         }
+
+        const alertDoc = await Notification.create([{
+            recipient: connection.senderId!,
+            sender: receiverId,
+            type: NotificationType.SWAP_CANCEL,
+            message: `${receiverId} has accepted your skill-swap request.`,
+            link: "/dashboard"
+        }], { session });
+
+        const activeNotificationPayload = await alertDoc[0]?.populate("sender", "name avatarUrl");
+
+        sendRealTimeNotification(connection.senderId!.toString(), activeNotificationPayload);
+
 
         senderWallet.balance -= 1.0;
         senderWallet.escrowBalance += 1.0;
@@ -186,7 +232,7 @@ export const respondToConnectionRequest = asyncHandler(async (
 
         // yaha se ab jitsi ka integration karna hai, meeting room create karna hai, link generate karna hai, aur connection document me save karna hai proposed time ke hisab se.
 
-        const { meetingLink, meetingRoomId } = getJitsiMeetingLink(connection.id);
+        const { meetingLink, meetingRoomId } = getJitsiMeetingLink(connection._id.toString());
 
         logger.info(meetingLink, meetingRoomId);
 
@@ -227,8 +273,12 @@ export const completeConnectionSwap = asyncHandler(async (
     session.startTransaction();
 
     try {
-        const currentUserId = req.user.id;
+        const currentUserId = req.user?.id;
         const { connectionId } = req.body;
+
+        if (!currentUserId) {
+            throw new ApiError(401, "Unauthorized.");
+        }
 
         if (!connectionId) {
             throw new ApiError(400, "Connection identity is required.");
@@ -244,8 +294,8 @@ export const completeConnectionSwap = asyncHandler(async (
             throw new ApiError(404, "Active connection swap not found or you are not a participant.");
         }
 
-        const senderWallet = await WalletModel.findOne({ userId: connection.senderId }).session(session);
-        const receiverWallet = await WalletModel.findOne({ userId: connection.receiverId }).session(session);
+        const senderWallet = await WalletModel.findOne({ userId: connection.senderId! }).session(session);
+        const receiverWallet = await WalletModel.findOne({ userId: connection.receiverId! }).session(session);
 
         if (!senderWallet || !receiverWallet) {
             throw new ApiError(404, "Peer wallets not found during settlement.");
@@ -299,7 +349,7 @@ export const getMyConnections = asyncHandler(async (
     next: NextFunction
 ) => {
     try {
-        const currentUserId = req.user.id;
+        const currentUserId = req.user?.id;
 
         if (!currentUserId) {
             throw new ApiError(401, "Unauthorized.");
@@ -358,12 +408,14 @@ export const cancelConnection = asyncHandler(async (
 ) => {
 
     try {
-        const userId = req.user.id;
+        const userId = req.user?.id;
+        if (!userId) {
+            throw new ApiError(401, "Unauthorized.");
+        }
+
         const { connectionId } = req.body;
 
-        if (!userId) {
-            throw new ApiError(400, "UserID not provided!");
-        }
+
 
         if (!connectionId) {
             throw new ApiError(400, "ConnectioID is not given!");

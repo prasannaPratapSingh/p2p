@@ -15,6 +15,7 @@ import walletRouter from './modules/wallet/wallet.routes.js';
 import matchRouter from './modules/match/match.routes.js';
 import connectionRouter from './modules/connections/connections.routes.js';
 import profileRouter from './modules/profile/profile.routes.js';
+import notificationRouter from './modules/notifications/notification.route.js';
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20"
@@ -61,6 +62,7 @@ app.use('/api/wallet', walletRouter);
 app.use('/api/match', matchRouter);
 app.use('/api/connection', connectionRouter);
 app.use('/api/profile', profileRouter)
+app.use('/api/notification', notificationRouter);
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/api/docs.json', (_, res) => res.json(swaggerDocument));
@@ -71,7 +73,7 @@ passport.use(new GoogleStrategy({
     clientSecret: config.GOOGLE_CLIENT_SECRET,
     callbackURL: "http://localhost:4001/api/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
-    
+
     return done(null, profile);
 }));
 

@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
-import { NotificationType } from "../notifications/notification.interface.js";
-import type { INotification } from "../notifications/notification.interface.js";
+import { NotificationType } from "../../modules/notifications/notification.interface.js";
+import type { INotification } from "../../modules/notifications/notification.interface.js";
 
 const notificationSchema = new Schema<INotification>(
     {
