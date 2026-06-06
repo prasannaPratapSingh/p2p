@@ -40,7 +40,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]">
+    <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-white/[0.04] backdrop-blur-xl backdrop-saturate-150 shadow-[0_1px_24px_0_rgba(0,0,0,0.4)]">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-slate-100 lg:px-10">
         <button
           type="button"
