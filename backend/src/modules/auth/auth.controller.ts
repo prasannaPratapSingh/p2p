@@ -411,14 +411,14 @@ export const getMe = asyncHandler(async (
 
 export const googleCallback = asyncHandler(
     async (req: Request, res: Response) => {
-        const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+        const CLIENT_URL = config.CLIENT_URL;
         try {
             if (!req.user) {
                 return res.redirect(`${CLIENT_URL}/login?error=auth_failed`);
             }
             const email = req.user.emails?.[0]?.value;
             if (!email) {
-                return res.redirect("http://localhost:5173/login?error=no_email");
+                return res.redirect(`${CLIENT_URL}/login?error=no_email`);
             }
             const name: string = req.user.displayName || "";
             const avatarUrl: string = (req.user as any).photos?.[0]?.value || "";

@@ -48,6 +48,14 @@ if (!process.env.GOOGLE_CLIENT_SECRET) {
     logger.error("GOOGLE_CLIENT_SECRET env variable does not loaded successfully!");
     process.exit(1);
 }
+if (!process.env.GOOGLE_CALLBACK_URL) {
+    logger.error("GOOGLE_CALLBACK_URL env variable does not loaded successfully!");
+    process.exit(1);
+}
+if (!process.env.CLIENT_URL) {
+    logger.error("CLIENT_URL env variable does not loaded successfully!");
+    process.exit(1);
+}
 
 // 1. Bug Fix: Lowercase primitive types used here
 interface EnvConfig {
@@ -62,6 +70,8 @@ interface EnvConfig {
     IMAGEKIT_PUBLIC_KEY: string
     GOOGLE_CLIENT_ID: string
     GOOGLE_CLIENT_SECRET: string
+    GOOGLE_CALLBACK_URL: string
+    CLIENT_URL: string
 }
 
 // 2. Bug Fix: Added string fallbacks to satisfy TS strict null checks
@@ -77,6 +87,8 @@ const envConfig: EnvConfig = {
     IMAGEKIT_PUBLIC_KEY:process.env.IMAGEKIT_PUBLIC_KEY,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || "",
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || "",
+    CLIENT_URL: process.env.CLIENT_URL || "",
 };
 
 export default envConfig;
