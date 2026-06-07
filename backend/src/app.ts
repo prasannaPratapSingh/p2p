@@ -71,7 +71,7 @@ app.use(passport.initialize());
 passport.use(new GoogleStrategy({
     clientID: config.GOOGLE_CLIENT_ID,
     clientSecret: config.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:4001/api/auth/google/callback"
+    callbackURL: "https://test-synapse.duckdns.org/api/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
 
     return done(null, profile);
