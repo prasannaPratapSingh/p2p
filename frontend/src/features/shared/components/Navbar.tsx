@@ -149,8 +149,12 @@ const Navbar = () => {
                       <div className="text-center py-4 text-xs text-slate-500">No notifications yet.</div>
                     ) : (
                       notificationList.map((notification: any) => {
-                        const senderName = typeof notification.sender === "object" ? notification.sender?.name : "System";
-                        const senderAvatar = typeof notification.sender === "object" ? notification.sender?.avatarUrl : null;
+                        const senderName = (notification.sender && typeof notification.sender === "object")
+                          ? (notification.sender.name || "System")
+                          : (typeof notification.sender === "string" ? notification.sender : "System");
+                        const senderAvatar = (notification.sender && typeof notification.sender === "object")
+                          ? (notification.sender.avatarUrl || null)
+                          : null;
                         return (
                           <div
                             key={notification._id}

@@ -49,7 +49,9 @@ export const useSocket = () => {
         socket.on("NEW_NOTIFICATION", (data) => {
             console.log("🔥 Notification Captured in Custom Hook:", data);
             dispatch(addIncomingNotification(data)); // Direct dispatch to notificationSlice
-            const senderName = typeof data.sender === "object" ? data.sender?.name : "System";
+            const senderName = (data.sender && typeof data.sender === "object")
+                ? (data.sender.name || "System")
+                : (typeof data.sender === "string" ? data.sender : "System");
             toast(`${senderName} ${data.message}`, {
                 icon: "🔔",
             });
